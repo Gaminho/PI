@@ -26,6 +26,20 @@
             android:layout_weight="1"
             android:text="Add a pupil"/>
 
+        <Button
+            android:id="@+id/see_classes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="See Classes"/>
+
+        <Button
+            android:id="@+id/add_classes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add a class"/>
+
     </LinearLayout>
 
     <FrameLayout
