@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class ActivityCourse extends AppCompatActivity {
+public class ActivityCourse extends AppCompatActivity implements View.OnClickListener {
 
     private Spinner mSpinPupil;
     private Calendar mCalendar;
@@ -41,32 +42,18 @@ public class ActivityCourse extends AppCompatActivity {
 
         getPupils();
 
-        findViewById(R.id.btn_datepicker).setOnClickListener(v -> new DatePickerDialog(this, (view, year, monthOfYear, dayOfMonth) ->
-                setDate(mCalendar, year, monthOfYear, dayOfMonth),
-                mCalendar.get(Calendar.YEAR),
-                mCalendar.get(Calendar.MONTH),
-                mCalendar.get(Calendar.DAY_OF_MONTH)
-        ).show());
-
-        findViewById(R.id.btn_hourpicker).setOnClickListener(v -> new TimePickerDialog(this, (view, hour, minute) ->
-                setHour(mCalendar, hour, minute),
-                mCalendar.get(Calendar.HOUR_OF_DAY),
-                mCalendar.get(Calendar.MINUTE),
-                true
-        ).show());
-
-
-        findViewById(R.id.add_class).setOnClickListener(v -> {
-            Course course = new Course(mSpinPupil.getSelectedItem().toString(), mCalendar.getTimeInMillis());
-            addCourse(course);
-        });
+        findViewById(R.id.btn_datepicker).setOnClickListener(this);
+        findViewById(R.id.btn_hourpicker).setOnClickListener(this);
+        findViewById(R.id.add_class).setOnClickListener(this);
     }
 
     private void setDate(Calendar pCalendar, int pYear, int pMonth, int pDayOfMonth){
         pCalendar.set(Calendar.YEAR, pYear);
         pCalendar.set(Calendar.MONTH, pMonth);
         pCalendar.set(Calendar.DAY_OF_MONTH, pDayOfMonth);
-        updateUI();
+        ((TextView)findViewById(R.id.tv_date)).setText(
+                new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+                        .format(pCalendar.getTime()));
     }
 
     private void setHour(Calendar pCalendar, int pHour, int pMinute){
@@ -74,17 +61,11 @@ public class ActivityCourse extends AppCompatActivity {
         pCalendar.set(Calendar.MINUTE, pMinute);
         pCalendar.set(Calendar.SECOND, 0);
         pCalendar.set(Calendar.MILLISECOND, 0);
-        updateUI();
-    }
-
-    private void updateUI(){
-        ((TextView)findViewById(R.id.tv_date)).setText(
-                new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
-                        .format(mCalendar.getTime()));
         ((TextView)findViewById(R.id.tv_hour)).setText(
                 new SimpleDateFormat("HH:mm", Locale.FRANCE)
-                        .format(mCalendar.getTime()));
+                        .format(pCalendar.getTime()));
     }
+
 
     private void getPupils(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -140,4 +121,29 @@ public class ActivityCourse extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()){
+            case R.id.add_class:
+                Course course = new Course(mSpinPupil.getSelectedItem().toString(), mCalendar.getTimeInMillis());
+                addCourse(course);
+                break;
+            case R.id.btn_datepicker:
+                new DatePickerDialog(this, (v, year, monthOfYear, dayOfMonth) ->
+                        setDate(mCalendar, year, monthOfYear, dayOfMonth),
+                        mCalendar.get(Calendar.YEAR),
+                        mCalendar.get(Calendar.MONTH),
+                        mCalendar.get(Calendar.DAY_OF_MONTH)
+                ).show();
+                break;
+            case R.id.btn_hourpicker:
+                new TimePickerDialog(this, (v, hour, minute) ->
+                        setHour(mCalendar, hour, minute),
+                        mCalendar.get(Calendar.HOUR_OF_DAY),
+                        mCalendar.get(Calendar.MINUTE),
+                        true
+                ).show();
+                break;
+        }
+    }
 }
