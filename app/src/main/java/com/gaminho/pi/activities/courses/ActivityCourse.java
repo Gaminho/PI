@@ -1,10 +1,12 @@
 package com.gaminho.pi.activities.courses;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaminho.pi.R;
@@ -16,7 +18,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -25,19 +29,61 @@ import java.util.stream.Collectors;
 public class ActivityCourse extends AppCompatActivity {
 
     private Spinner mSpinPupil;
+    private Calendar mCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.class_form);
 
+        mCalendar = Calendar.getInstance();
         mSpinPupil = findViewById(R.id.pupil_spinner);
+
         getPupils();
 
+        findViewById(R.id.btn_datepicker).setOnClickListener(v -> new DatePickerDialog(this, (view, year, monthOfYear, dayOfMonth) ->
+                setDate(mCalendar, year, monthOfYear, dayOfMonth),
+                mCalendar.get(Calendar.YEAR),
+                mCalendar.get(Calendar.MONTH),
+                mCalendar.get(Calendar.DAY_OF_MONTH)
+        ).show());
+
+        findViewById(R.id.btn_hourpicker).setOnClickListener(v -> new TimePickerDialog(this, (view, hour, minute) ->
+                setHour(mCalendar, hour, minute),
+                mCalendar.get(Calendar.HOUR_OF_DAY),
+                mCalendar.get(Calendar.MINUTE),
+                true
+        ).show());
+
+
         findViewById(R.id.add_class).setOnClickListener(v -> {
-            Course course = new Course(mSpinPupil.getSelectedItem().toString(), System.currentTimeMillis());
+            Course course = new Course(mSpinPupil.getSelectedItem().toString(), mCalendar.getTimeInMillis());
             addCourse(course);
         });
+    }
+
+    private void setDate(Calendar pCalendar, int pYear, int pMonth, int pDayOfMonth){
+        pCalendar.set(Calendar.YEAR, pYear);
+        pCalendar.set(Calendar.MONTH, pMonth);
+        pCalendar.set(Calendar.DAY_OF_MONTH, pDayOfMonth);
+        updateUI();
+    }
+
+    private void setHour(Calendar pCalendar, int pHour, int pMinute){
+        pCalendar.set(Calendar.HOUR_OF_DAY, pHour);
+        pCalendar.set(Calendar.MINUTE, pMinute);
+        pCalendar.set(Calendar.SECOND, 0);
+        pCalendar.set(Calendar.MILLISECOND, 0);
+        updateUI();
+    }
+
+    private void updateUI(){
+        ((TextView)findViewById(R.id.tv_date)).setText(
+                new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+                        .format(mCalendar.getTime()));
+        ((TextView)findViewById(R.id.tv_hour)).setText(
+                new SimpleDateFormat("HH:mm", Locale.FRANCE)
+                        .format(mCalendar.getTime()));
     }
 
     private void getPupils(){

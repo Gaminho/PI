@@ -2,9 +2,7 @@ package com.gaminho.pi.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -18,15 +16,12 @@ import android.widget.Toast;
 
 import com.gaminho.pi.R;
 import com.gaminho.pi.activities.courses.ActivityCourse;
-import com.gaminho.pi.activities.dummy.DummyContent;
 import com.gaminho.pi.activities.pupils.ActivityPupil;
-import com.gaminho.pi.adapters.RecyclerViewAdapter;
 
 import java.util.Locale;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        ItemFragment.OnListFragmentInteractionListener,
         ListItemFragment.ListItemListener {
 
     @Override
@@ -99,9 +94,6 @@ public class IndexActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_share) {
-            fragment = new ItemFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_send) {
 
         }
@@ -109,11 +101,6 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-        Toast.makeText(this, item.toString(), Toast.LENGTH_SHORT).show();
     }
 
 
