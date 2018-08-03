@@ -1,9 +1,12 @@
 package com.gaminho.pi.beans;
 
+import com.google.firebase.database.Exclude;
+
 public class Course {
 
     private String mPupilId;
     private long mDate;
+    private Pupil mPupil;
 
     // Necessary for Firebase
     public Course() {
@@ -29,4 +32,10 @@ public class Course {
     public void setDate(long mDate) {
         this.mDate = mDate;
     }
+
+    @Exclude
+    public Pupil getPupil(){return mPupil;}
+
+    @Exclude
+    public void setPupil(Pupil pPupil){this.mPupil = pPupil;}
 }

@@ -5,12 +5,12 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaminho.pi.R;
+import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
 import com.google.firebase.database.DataSnapshot;
@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public class ActivityCourse extends AppCompatActivity implements View.OnClickListener {
 
@@ -73,34 +72,34 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String pMsg;
                 List<Pupil> pupils = new ArrayList<>();
 
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        pupils.add(snapshot.getValue(Pupil.class));
+                        if(snapshot.getValue(Pupil.class).getID() != null) {
+                            pupils.add(snapshot.getValue(Pupil.class));
+                        }
                     }
-                    pMsg = String.format(Locale.FRANCE,"%d pupils found", pupils.size());
                     fillSpinner(pupils);
                 } catch (Exception e){
-                    pMsg = String.format(Locale.FRANCE, "Exception:\n%s ", e.getMessage());
+                    String pMsg = String.format(Locale.FRANCE, "Exception:\n%s ", e.getMessage());
+                    Toast.makeText(getApplication(), pMsg, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getApplication(), pMsg, Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
-                Toast.makeText(getApplication(), String.format(Locale.FRANCE, "Failed to read value\n%s ", error.getMessage()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplication(), String.format(Locale.FRANCE,
+                        "Failed to read value\n%s ", error.getMessage()),
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fillSpinner(List<Pupil> pPupils){
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                pPupils.stream()
-                        .map(p-> p.getFirstname() + " " + p.getLastname())
-                        .collect(Collectors.toList()));
+        PupilSpinnerAdapter dataAdapter = new PupilSpinnerAdapter(this,
+                android.R.layout.simple_spinner_item, pPupils);
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinPupil.setAdapter(dataAdapter);
@@ -125,7 +124,9 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.add_class:
-                Course course = new Course(mSpinPupil.getSelectedItem().toString(), mCalendar.getTimeInMillis());
+                Pupil p = ((PupilSpinnerAdapter) mSpinPupil.getAdapter()).getPupils()
+                        .get(mSpinPupil.getSelectedItemPosition());
+                Course course = new Course(p.getID(), mCalendar.getTimeInMillis());
                 addCourse(course);
                 break;
             case R.id.btn_datepicker:

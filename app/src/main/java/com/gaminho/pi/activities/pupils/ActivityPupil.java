@@ -21,8 +21,9 @@ public class ActivityPupil extends AppCompatActivity {
 
         findViewById(R.id.add_pupil).setOnClickListener(v -> {
             if (isPupilValid()) {
-                Pupil p = new Pupil(((EditText) findViewById(R.id.pupilFirstname)).getText().toString(),
-                        ((EditText) findViewById(R.id.pupilLastname)).getText().toString());
+                String firstName = ((EditText) findViewById(R.id.pupilFirstname)).getText().toString();
+                String lastName = ((EditText) findViewById(R.id.pupilLastname)).getText().toString();
+                Pupil p = new Pupil(firstName, lastName);
                 addPupil(p);
             }
         });
@@ -53,6 +54,7 @@ public class ActivityPupil extends AppCompatActivity {
     private void addPupil(Pupil pPupil) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference().child("pupils").push();
+        pPupil.setID(ref.getKey());
         ref.setValue(pPupil, (databaseError, databaseReference) -> {
             String toasted = databaseError != null ?
                     databaseError.getMessage() :

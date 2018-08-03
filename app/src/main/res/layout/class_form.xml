@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:text="No specified date"/>
+            android:text="No specified hour"/>
 
         <Button
             android:id="@+id/btn_hourpicker"
@@ -52,10 +52,9 @@
 
     <Button
         android:id="@+id/add_class"
-        android:text="Add pupil"
+        android:text="Add class"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp" />
+        android:layout_gravity="end|bottom" />
 
 </LinearLayout>

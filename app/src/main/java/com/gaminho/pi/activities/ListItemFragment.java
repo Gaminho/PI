@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -88,7 +90,38 @@ public class ListItemFragment extends Fragment {
 
                 try {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        items.add(snapshot.getValue(finalItemClass));
+
+                        if(mItemType == LIST_COURSE){
+                            Course course = snapshot.getValue(Course.class);
+                            String pupilId = course.getPupilId();
+
+                            Log.d("PI", "1. pupilId: " + pupilId);
+                            Query pupilRef = database.getReference().child("pupils").child(pupilId);
+                            pupilRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.getChildrenCount() == 0){
+                                        Log.d("PI", "2. No pupil found with id: " + pupilId);
+//                                        items.add(snapshot.getValue(finalItemClass));
+                                    } else {
+                                        Pupil p = dataSnapshot.getValue(Pupil.class);
+                                        Log.d("PI", "3. Pupil found: " + p.getFirstname());
+                                        course.setPupil(p);
+//                                        items.add(course);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Toast.makeText(getActivity(), "Unable to get Pupil with id " + pupilId, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            //FIXME Add only after getting pupils
+                            items.add(course);
+                            Log.d("PI", "3. Course added: " + course.getPupil());
+                        } else {
+                            items.add(snapshot.getValue(finalItemClass));
+                        }
                     }
                     pMsg = String.format(Locale.FRANCE,"%d pupils found", items.size());
                     fillListView(items);

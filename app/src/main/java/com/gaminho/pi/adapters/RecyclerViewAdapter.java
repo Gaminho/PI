@@ -29,7 +29,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_item, parent, false);
         return new RecyclerViewAdapter.ViewHolder(view);
@@ -41,12 +40,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.mItem = mValues.get(position);
         switch(mAdapterType){
             case ListItemFragment.LIST_PUPIL:
-                holder.mItemTitle.setText(((Pupil)mValues.get(position)).getFirstname());
-                holder.mItemDetails.setText(((Pupil)mValues.get(position)).getLastname());
+                Pupil p = (Pupil) mValues.get(position);
+                holder.mItemTitle.setText(p.getFirstname());
+                holder.mItemDetails.setText(p.getLastname());
+                if(p.getID() != null){
+                    holder.mItemDetails.append(p.getID());
+                }
                 break;
             case ListItemFragment.LIST_COURSE:
-                holder.mItemTitle.setText(((Course)mValues.get(position)).getPupilId());
-                holder.mItemDetails.setText(new Date(((Course)mValues.get(position)).getDate()).toString());
+                Course c = (Course)mValues.get(position);
+                holder.mItemTitle.setText(c.getPupil() != null ? c.getPupil().getFirstname() : c.getPupilId());
+                holder.mItemDetails.setText(new Date(c.getDate()).toString());
                 break;
         }
 

@@ -2,7 +2,9 @@ package com.gaminho.pi.beans;
 
 public class Pupil {
 
-    private String mFirstname, mLastname;
+    private String mID, mFirstname, mLastname;
+    private long mCreation;
+
 
     // Necessary for Firebase
     public Pupil() {
@@ -11,6 +13,7 @@ public class Pupil {
     public Pupil(String mFirstname, String mLastname) {
         this.mFirstname = mFirstname;
         this.mLastname = mLastname;
+        this.mCreation = System.currentTimeMillis();
     }
 
     public String getFirstname() {
@@ -27,5 +30,21 @@ public class Pupil {
 
     public void setLastname(String mLastname) {
         this.mLastname = mLastname;
+    }
+
+    public String getID() {
+        return mID;
+    }
+
+    public void setID(String mID) {
+        this.mID = mID;
+    }
+
+    public long getCreation() {
+        return mCreation;
+    }
+
+    public void setCreation(long mCreation) {
+        this.mCreation = mCreation;
     }
 }
