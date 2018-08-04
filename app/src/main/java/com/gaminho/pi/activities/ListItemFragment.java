@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaminho.pi.DatabaseHelper;
-import com.gaminho.pi.FireBaseListener2;
+import com.gaminho.pi.FireBaseListener;
 import com.gaminho.pi.R;
 import com.gaminho.pi.adapters.RecyclerViewAdapter;
 import com.gaminho.pi.beans.Course;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListItemFragment extends Fragment implements FireBaseListener2 {
+public class ListItemFragment extends Fragment implements FireBaseListener {
 
     private static final String ARG_ITEM_TYPE = "item-type";
     public static final int LIST_PUPIL = 1;
