@@ -25,12 +25,13 @@ import com.gaminho.pi.activities.courses.ActivityCourse;
 import com.gaminho.pi.activities.pupils.ActivityPupil;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
+import com.gaminho.pi.dialogs.AddCourseDialog;
+import com.gaminho.pi.dialogs.CustomAddingDialog;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,10 @@ import java.util.stream.Collectors;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        ListItemFragment.ListItemListener {
+        ListItemFragment.ListItemListener, CustomAddingDialog.OnAddingDialogListener {
+
+    //Intent
+    public final static String EXTRA_PUPILS_LIST = "m-pupils";
 
     private FirebaseDatabase mDatabase;
     private Map<String, Pupil> mPupils = new HashMap<>();
@@ -48,19 +52,17 @@ public class IndexActivity extends AppCompatActivity
     private ChildEventListener mCoursesCEV = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d(getClass().getSimpleName(), "Course " + dataSnapshot.getKey()+ "added");
             mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
+            Log.d(getClass().getSimpleName(), "New course has been added: " + dataSnapshot.getValue(Course.class).getDate());
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            Log.d(getClass().getSimpleName(), "Course " + dataSnapshot.getKey()+ "updated");
             mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Log.d(getClass().getSimpleName(), "Course " + dataSnapshot.getKey()+ "removed");
             mCourses.remove(dataSnapshot.getKey());
         }
 
@@ -78,19 +80,16 @@ public class IndexActivity extends AppCompatActivity
     private ChildEventListener mPupilsCEV = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d(getClass().getSimpleName(), "Pupil " + dataSnapshot.getKey()+ "added");
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            Log.d(getClass().getSimpleName(), "Pupil " + dataSnapshot.getKey()+ "updated");
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            Log.d(getClass().getSimpleName(), "Pupil " + dataSnapshot.getKey()+ "removed");
             mPupils.remove(dataSnapshot.getKey());
         }
 
@@ -104,7 +103,6 @@ public class IndexActivity extends AppCompatActivity
 
         }
     };
-
 
     FireBaseService mService;
     boolean mBound = false;
@@ -152,7 +150,7 @@ public class IndexActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // Launch service for firebase
-        startService(new Intent(IndexActivity.this, FireBaseService.class));
+//        startService(new Intent(IndexActivity.this, FireBaseService.class));
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(view -> Snackbar.make(view,
@@ -243,9 +241,14 @@ public class IndexActivity extends AppCompatActivity
     public void addItem(int pListType) {
         switch(pListType){
             case ListItemFragment.LIST_COURSE:
-                Intent intent = new Intent(this, ActivityCourse.class);
-                intent.putExtra("m-pupils", (Serializable) mPupils.values().stream().collect(Collectors.toList()));
-                startActivity(intent);
+//                Intent intent = new Intent(this, ActivityCourse.class);
+//                intent.putExtra(EXTRA_PUPILS_LIST, new ArrayList<>(mPupils.values()));
+                AddCourseDialog a = new AddCourseDialog();
+                Bundle args = new Bundle();
+                args.putSerializable(EXTRA_PUPILS_LIST, new ArrayList<>(mPupils.values()));
+                a.setArguments(args);
+                a.show(getFragmentManager(), "MyAddingDialog");
+                //startActivity(intent);
                 break;
             case ListItemFragment.LIST_PUPIL:
                 startActivity(new Intent(this, ActivityPupil.class));
@@ -295,5 +298,10 @@ public class IndexActivity extends AppCompatActivity
                 Log.d(getClass().getSimpleName(), "Course " + courseId + " is now linked with a pupil");
             }
         });
+    }
+
+    @Override
+    public void addItem(Object pItemToAdd) {
+        Toast.makeText(this, "User wanna add:\n" + pItemToAdd.toString(), Toast.LENGTH_SHORT).show();
     }
 }

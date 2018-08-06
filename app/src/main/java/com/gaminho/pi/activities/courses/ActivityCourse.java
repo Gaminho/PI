@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gaminho.pi.R;
+import com.gaminho.pi.activities.IndexActivity;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
@@ -35,7 +36,7 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
         mCalendar = Calendar.getInstance();
         mSpinPupil = findViewById(R.id.pupil_spinner);
 
-        List<Pupil> ps = (List<Pupil>) getIntent().getSerializableExtra("m-pupils");
+        List<Pupil> ps = (List<Pupil>) getIntent().getSerializableExtra(IndexActivity.EXTRA_PUPILS_LIST);
         fillSpinner(ps);
 
         findViewById(R.id.btn_datepicker).setOnClickListener(this);

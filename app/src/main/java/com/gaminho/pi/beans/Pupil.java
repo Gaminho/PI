@@ -49,4 +49,14 @@ public class Pupil implements Serializable {
     public void setCreation(long mCreation) {
         this.mCreation = mCreation;
     }
+
+    @Override
+    public String toString() {
+        return "Pupil{" +
+                "mID='" + mID + '\'' +
+                ", mFirstname='" + mFirstname + '\'' +
+                ", mLastname='" + mLastname + '\'' +
+                ", mCreation=" + mCreation +
+                '}';
+    }
 }
