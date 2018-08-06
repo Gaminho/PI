@@ -1,7 +1,10 @@
 package com.gaminho.pi.activities;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,19 +13,136 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.FireBaseService;
 import com.gaminho.pi.R;
 import com.gaminho.pi.activities.courses.ActivityCourse;
 import com.gaminho.pi.activities.pupils.ActivityPupil;
+import com.gaminho.pi.beans.Course;
+import com.gaminho.pi.beans.Pupil;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Locale;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         ListItemFragment.ListItemListener {
+
+    private FirebaseDatabase mDatabase;
+    private Map<String, Pupil> mPupils = new HashMap<>();
+    private Map<String, Course> mCourses = new HashMap<>();
+
+    private ChildEventListener mCoursesCEV = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d(getClass().getSimpleName(), "Course " + dataSnapshot.getKey()+ "added");
+            mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d(getClass().getSimpleName(), "Course " + dataSnapshot.getKey()+ "updated");
+            mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            Log.d(getClass().getSimpleName(), "Course " + dataSnapshot.getKey()+ "removed");
+            mCourses.remove(dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ChildEventListener mPupilsCEV = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d(getClass().getSimpleName(), "Pupil " + dataSnapshot.getKey()+ "added");
+            mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            Log.d(getClass().getSimpleName(), "Pupil " + dataSnapshot.getKey()+ "updated");
+            mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            Log.d(getClass().getSimpleName(), "Pupil " + dataSnapshot.getKey()+ "removed");
+            mPupils.remove(dataSnapshot.getKey());
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+
+    FireBaseService mService;
+    boolean mBound = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            FireBaseService.LocalBinder binder = (FireBaseService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+//        Intent intent = new Intent(this, FireBaseService.class);
+//        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        retrievePupils();
+        retrieveCourses();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        unbindService(mConnection);
+//        mBound = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +150,9 @@ public class IndexActivity extends AppCompatActivity
         setContentView(R.layout.activity_index);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Launch service for firebase
+        startService(new Intent(IndexActivity.this, FireBaseService.class));
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(view -> Snackbar.make(view,
@@ -44,6 +167,9 @@ public class IndexActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mDatabase.setPersistenceEnabled(true);
     }
 
     @Override
@@ -105,21 +231,69 @@ public class IndexActivity extends AppCompatActivity
 
 
     @Override
-    public void selectItem(Object pItem, int pListType) {
-        Toast.makeText(this, String.format(Locale.FRANCE,
-                "Click on %s, (mod: %d)",
-                pItem.toString(), pListType),Toast.LENGTH_SHORT).show();
+    public void selectItem(Object pItem) {
+        StringBuffer strB = new StringBuffer("Click on ");
+        strB.append(pItem instanceof Course ?
+                "a course with date: " + ((Course) pItem).getDate()
+                : "a pupil with id: : " + ((Pupil)pItem). getFirstname());
+        Toast.makeText( this, strB.toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void addItem(int pListType) {
         switch(pListType){
             case ListItemFragment.LIST_COURSE:
-                startActivity(new Intent(this, ActivityCourse.class));
+                Intent intent = new Intent(this, ActivityCourse.class);
+                intent.putExtra("m-pupils", (Serializable) mPupils.values().stream().collect(Collectors.toList()));
+                startActivity(intent);
                 break;
             case ListItemFragment.LIST_PUPIL:
                 startActivity(new Intent(this, ActivityPupil.class));
                 break;
         }
+    }
+
+    @Override
+    public FirebaseDatabase getDatabase() {
+        return mDatabase;
+    }
+
+    @Override
+    public List getItems(int pListType) {
+        fetchCourses();
+        List items = new ArrayList();
+        switch (pListType){
+            case ListItemFragment.LIST_COURSE:
+                items.addAll(mCourses.values().stream().filter(course -> course.getPupil() != null).collect(Collectors.toList()));
+                break;
+            case ListItemFragment.LIST_PUPIL:
+                items.addAll(mPupils.values());
+                break;
+        }
+        return items;
+    }
+
+    private void retrievePupils(){
+        if(mDatabase != null){
+            DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.PUPILS)
+                    .addChildEventListener(mPupilsCEV);
+        }
+    }
+
+    private void retrieveCourses(){
+        if(mDatabase != null){
+            DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.COURSES)
+                    .addChildEventListener(mCoursesCEV);
+        }
+    }
+
+    private void fetchCourses(){
+        mCourses.forEach((courseId, course) -> {
+            if(course.getPupil() == null && mPupils.containsKey(course.getPupilId())){
+                course.setPupil(mPupils.get(course.getPupilId()));
+                mCourses.put(courseId, course);
+                Log.d(getClass().getSimpleName(), "Course " + courseId + " is now linked with a pupil");
+            }
+        });
     }
 }

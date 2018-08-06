@@ -2,7 +2,9 @@ package com.gaminho.pi.beans;
 
 import com.google.firebase.database.Exclude;
 
-public class Course {
+import java.io.Serializable;
+
+public class Course implements Serializable {
 
     private String mPupilId;
     private long mDate;
@@ -38,4 +40,12 @@ public class Course {
 
     @Exclude
     public void setPupil(Pupil pPupil){this.mPupil = pPupil;}
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "mPupilId='" + mPupilId + '\'' +
+                ", mDate=" + mDate +
+                '}';
+    }
 }

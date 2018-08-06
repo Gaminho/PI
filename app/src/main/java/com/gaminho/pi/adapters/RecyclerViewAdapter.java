@@ -16,14 +16,12 @@ import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private final int mAdapterType;
     private final List mValues;
     private final ListItemFragment.ListItemListener mListener;
 
-    public RecyclerViewAdapter(List mValues, ListItemFragment.ListItemListener mListener, int mAdapterType) {
+    public RecyclerViewAdapter(List mValues, ListItemFragment.ListItemListener mListener) {
         this.mValues = mValues;
         this.mListener = mListener;
-        this.mAdapterType = mAdapterType;
     }
 
     @Override
@@ -38,27 +36,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(final RecyclerViewAdapter.ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        switch(mAdapterType){
-            case ListItemFragment.LIST_PUPIL:
-                Pupil p = (Pupil) mValues.get(position);
-                holder.mItemTitle.setText(p.getFirstname());
-                holder.mItemDetails.setText(p.getLastname());
-                if(p.getID() != null){
-                    holder.mItemDetails.append(p.getID());
-                }
-                break;
-            case ListItemFragment.LIST_COURSE:
-                Course c = (Course)mValues.get(position);
-                holder.mItemTitle.setText(c.getPupil() != null ? c.getPupil().getFirstname() : c.getPupilId());
-                holder.mItemDetails.setText(new Date(c.getDate()).toString());
-                break;
+        if (holder.mItem instanceof Pupil){
+            Pupil p = (Pupil) mValues.get(position);
+            holder.mItemTitle.setText(p.getFirstname());
+            holder.mItemDetails.setText(p.getLastname());
+            if(p.getID() != null){
+                holder.mItemDetails.append(p.getID());
+            }
+        } else if (holder.mItem instanceof Course){
+            Course c = (Course)mValues.get(position);
+            holder.mItemTitle.setText(c.getPupil() != null ? c.getPupil().getFirstname() : c.getPupilId());
+            holder.mItemDetails.setText(new Date(c.getDate()).toString());
         }
 
         holder.mView.setOnClickListener(v -> {
             if (null != mListener) {
                 // Notify the active callbacks interface (the activity, if the
                 // fragment is attached to one) that an item has been selected.
-                mListener.selectItem(holder.mItem, mAdapterType);
+                mListener.selectItem(holder.mItem);
             }
         });
     }
@@ -69,16 +64,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mItemTitle;
-        public final TextView mItemDetails;
-        public Object mItem;
+        final View mView;
+        final TextView mItemTitle;
+        final TextView mItemDetails;
+        Object mItem;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
-            mItemTitle = (TextView) view.findViewById(R.id.item_title);
-            mItemDetails = (TextView) view.findViewById(R.id.item_details);
+            mItemTitle = view.findViewById(R.id.item_title);
+            mItemDetails = view.findViewById(R.id.item_details);
         }
 
         @Override

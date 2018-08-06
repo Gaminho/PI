@@ -13,14 +13,10 @@ import com.gaminho.pi.R;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -39,11 +35,13 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
         mCalendar = Calendar.getInstance();
         mSpinPupil = findViewById(R.id.pupil_spinner);
 
-        getPupils();
+        List<Pupil> ps = (List<Pupil>) getIntent().getSerializableExtra("m-pupils");
+        fillSpinner(ps);
 
         findViewById(R.id.btn_datepicker).setOnClickListener(this);
         findViewById(R.id.btn_hourpicker).setOnClickListener(this);
         findViewById(R.id.add_class).setOnClickListener(this);
+
     }
 
     private void setDate(Calendar pCalendar, int pYear, int pMonth, int pDayOfMonth){
@@ -63,38 +61,6 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
         ((TextView)findViewById(R.id.tv_hour)).setText(
                 new SimpleDateFormat("HH:mm", Locale.FRANCE)
                         .format(pCalendar.getTime()));
-    }
-
-
-    private void getPupils(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference().child("pupils");
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Pupil> pupils = new ArrayList<>();
-
-                try {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        if(snapshot.getValue(Pupil.class).getID() != null) {
-                            pupils.add(snapshot.getValue(Pupil.class));
-                        }
-                    }
-                    fillSpinner(pupils);
-                } catch (Exception e){
-                    String pMsg = String.format(Locale.FRANCE, "Exception:\n%s ", e.getMessage());
-                    Toast.makeText(getApplication(), pMsg, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(getApplication(), String.format(Locale.FRANCE,
-                        "Failed to read value\n%s ", error.getMessage()),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void fillSpinner(List<Pupil> pPupils){

@@ -1,6 +1,8 @@
 package com.gaminho.pi.beans;
 
-public class Pupil {
+import java.io.Serializable;
+
+public class Pupil implements Serializable {
 
     private String mID, mFirstname, mLastname;
     private long mCreation;

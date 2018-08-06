@@ -9,6 +9,7 @@ import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Pupil;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Locale;
 
@@ -52,7 +53,8 @@ public class ActivityPupil extends AppCompatActivity {
     }
 
     private void addPupil(Pupil pPupil) {
-        DatabaseReference ref = DatabaseHelper.getNodeReference(DatabaseHelper.Nodes.PUPILS).push();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = DatabaseHelper.getNodeReference(database, DatabaseHelper.Nodes.PUPILS).push();
         pPupil.setID(ref.getKey());
         ref.setValue(pPupil, (databaseError, databaseReference) -> {
             String toasted = databaseError != null ?

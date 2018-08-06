@@ -5,29 +5,21 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gaminho.pi.DatabaseHelper;
-import com.gaminho.pi.FireBaseListener;
 import com.gaminho.pi.R;
 import com.gaminho.pi.adapters.RecyclerViewAdapter;
-import com.gaminho.pi.beans.Course;
-import com.gaminho.pi.beans.Pupil;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListItemFragment extends Fragment implements FireBaseListener {
+public class ListItemFragment extends Fragment {
 
     private static final String ARG_ITEM_TYPE = "item-type";
     public static final int LIST_PUPIL = 1;
@@ -35,7 +27,6 @@ public class ListItemFragment extends Fragment implements FireBaseListener {
     private int mItemType = LIST_PUPIL;
 
     private TextView mTVCounter;
-    private RecyclerView mListViewItem;
     private ListItemListener mListener;
 
     private List mListItems;
@@ -52,56 +43,13 @@ public class ListItemFragment extends Fragment implements FireBaseListener {
         return fragment;
     }
 
-    private void getItems(){
-        DatabaseReference itemRef;
-        Class itemClass;
-        mListItems.clear();
-
-        switch(mItemType){
-            case LIST_COURSE:
-                itemRef = DatabaseHelper.getNodeReference(DatabaseHelper.Nodes.COURSES);
-                itemClass = Course.class;
-                break;
-            case LIST_PUPIL:
-                itemRef = DatabaseHelper.getNodeReference(DatabaseHelper.Nodes.PUPILS);
-                itemClass = Pupil.class;
-                break;
-            default:
-                itemRef = DatabaseHelper.getNodeReference(DatabaseHelper.Nodes.PUPILS);
-                itemClass = Pupil.class;
-                break;
-        }
-
-        Class finalItemClass = itemClass;
-        this.onStartFireBaseOperation();
-
-        itemRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                try {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        mListItems.add(snapshot.getValue(finalItemClass));
-                    }
-                    Log.d("PI", String.format(Locale.FRANCE,"%d items found", mListItems.size()));
-                } catch (Exception e){
-                    Log.d("PI", String.format(Locale.FRANCE, "Exception:\n%s ", e.getMessage()));
-                }
-                onEndFireBaseOperation();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.d("PI", String.format(Locale.FRANCE, "Failed to read value\n%s ", error.getMessage()));
-                onEndFireBaseOperation();
-            }
-        });
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        getItems();
+        mListItems.clear();
+        mListItems.addAll(mListener.getItems(mItemType));
+        updateTextView(String.format(Locale.FRANCE, "%d items found.", mListItems.size()));
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -112,8 +60,8 @@ public class ListItemFragment extends Fragment implements FireBaseListener {
             mItemType = getArguments().getInt(ARG_ITEM_TYPE);
         }
 
-        mListItems = new ArrayList<>();
-        mAdapter = new RecyclerViewAdapter(mListItems, mListener, mItemType);
+        mListItems = new ArrayList();
+        mAdapter = new RecyclerViewAdapter(mListItems, mListener);
     }
 
     @Override
@@ -122,7 +70,8 @@ public class ListItemFragment extends Fragment implements FireBaseListener {
 
         View mRoot = inflater.inflate(R.layout.list_layout, container, false);;
         mTVCounter = mRoot.findViewById(R.id.tv_counter);
-        mListViewItem = mRoot.findViewById(R.id.list_items);
+
+        RecyclerView mListViewItem = mRoot.findViewById(R.id.list_items);
         mListViewItem.setLayoutManager(new LinearLayoutManager(mListViewItem.getContext()));
         mListViewItem.setAdapter(mAdapter);
 
@@ -160,60 +109,10 @@ public class ListItemFragment extends Fragment implements FireBaseListener {
         }
     }
 
-    private void refreshListView(){
-        if (mListViewItem != null) {
-            Log.d("PI", "refreshListView");
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
-
-    @Override
-    public void onStartFireBaseOperation() {
-        updateTextView("Getting items");
-        Log.d("PI", "Start getting " + mItemType);
-    }
-
-    @Override
-    public void onEndFireBaseOperation() {
-        Log.d("PI", "End getting " + mItemType);
-
-        // If items are courses, retrieve the pupils attached by pupilId of courses
-        if(mItemType == LIST_COURSE){
-
-            updateTextView("Getting pupils for " + mListItems.size() + " courses");
-
-            for(int i = 0 ; i < mListItems.size() ; i++){
-                Course c = (Course) mListItems.get(i);
-                int finalI = i;
-                DatabaseHelper.getNodeReference(DatabaseHelper.Nodes.PUPILS).child(c.getPupilId())
-                        .addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.getChildrenCount() > 0){
-                                    c.setPupil(dataSnapshot.getValue(Pupil.class));
-                                    mListItems.set(finalI, c);
-                                    Log.d("PI", "Pupil found (" + dataSnapshot.getKey() + ")");
-                                    refreshListView();
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                Log.d("PI", "Cancel operation " + databaseError.getDetails());
-                            }
-                });
-            }
-        }
-        // Otherwise, we can display the list
-        else {
-            refreshListView();
-        }
-        updateTextView(String.format(Locale.FRANCE, "%d items found.", mListItems.size()));
-    }
-
     public interface ListItemListener {
-        void selectItem(Object pItem, int pListType);
+        void selectItem(Object pItem);
         void addItem(int pListType);
+        FirebaseDatabase getDatabase();
+        List getItems(int pListType);
     }
 }
