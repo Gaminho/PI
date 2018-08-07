@@ -33,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +143,10 @@ public class IndexActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+        DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.PUPILS)
+                .removeEventListener(mPupilsCEV);
+        DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.COURSES)
+                .removeEventListener(mCoursesCEV);
 //        unbindService(mConnection);
 //        mBound = false;
     }
@@ -270,7 +276,9 @@ public class IndexActivity extends AppCompatActivity
         List items = new ArrayList();
         switch (pListType){
             case ListItemFragment.LIST_COURSE:
-                items.addAll(mCourses.values().stream().filter(course -> course.getPupil() != null).collect(Collectors.toList()));
+                items.addAll(mCourses.values().stream().filter(course -> course.getPupil() != null).sorted(
+                        (course1, course2) -> Long.valueOf(course2.getDate()).compareTo(course1.getDate())
+                ).collect(Collectors.toList()));
                 break;
             case ListItemFragment.LIST_PUPIL:
                 items.addAll(mPupils.values());

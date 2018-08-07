@@ -7,7 +7,8 @@ import java.io.Serializable;
 public class Course implements Serializable {
 
     private String mPupilId;
-    private long mDate;
+    private long mDate, mDuration;
+
     private Pupil mPupil;
 
     // Necessary for Firebase
@@ -17,6 +18,12 @@ public class Course implements Serializable {
     public Course(String pPupilId, long pDate) {
         this.mPupilId = pPupilId;
         this.mDate = pDate;
+    }
+
+    public Course(String mPupilId, long mDate, long mDuration) {
+        this.mPupilId = mPupilId;
+        this.mDate = mDate;
+        this.mDuration = mDuration;
     }
 
     public String getPupilId() {
@@ -41,11 +48,20 @@ public class Course implements Serializable {
     @Exclude
     public void setPupil(Pupil pPupil){this.mPupil = pPupil;}
 
+    public long getDuration() {
+        return mDuration;
+    }
+
+    public void setDuration(long mDuration) {
+        this.mDuration = mDuration;
+    }
+
     @Override
     public String toString() {
         return "Course{" +
                 "mPupilId='" + mPupilId + '\'' +
                 ", mDate=" + mDate +
+                ", mDuration=" + mDuration +
                 '}';
     }
 }

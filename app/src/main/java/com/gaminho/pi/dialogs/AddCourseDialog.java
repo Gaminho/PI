@@ -4,13 +4,14 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.R;
 import com.gaminho.pi.activities.IndexActivity;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
@@ -31,7 +32,8 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     private List<Pupil> mPupils;
     private Calendar mCalendar;
 
-    private TextView mTVDate, mTVHour;
+    private TextView mTVDate, mTVHour, mTVError;
+    private RadioGroup mRGDuration;
     private Spinner mSpinner;
 
     @Override
@@ -57,6 +59,9 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         super.mView.findViewById(R.id.btn_hourpicker).setOnClickListener(this);
         mTVDate = super.mView.findViewById(R.id.tv_date);
         mTVHour = super.mView.findViewById(R.id.tv_hour);
+        mTVError = super.mView.findViewById(R.id.tv_error);
+        mRGDuration = super.mView.findViewById(R.id.rg_class_duration);
+        mTVError.setVisibility(View.GONE);
 
         mSpinner = super.mView.findViewById(R.id.pupil_spinner);
         PupilSpinnerAdapter dataAdapter = new PupilSpinnerAdapter(getContext(),
@@ -68,33 +73,35 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
 
     @Override
     public String getTitle() {
-        return "Add pupil";
+        return "Add course";
     }
 
     @Override
     public boolean positiveClick(DialogInterface dialogInterface, int i) {
+
         if(isCourseValid()){
-            String pupilId = mPupils.get(mSpinner.getSelectedItemPosition()).getID();
-            Course course = new Course(pupilId, mCalendar.getTimeInMillis());
-//            super.mListener.addItem(course);
+            Course course = extractCourseFromUI();
 
             FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ref = database.getReference().child("classes").push();
-            ref.setValue(course, (databaseError, databaseReference) -> {
-                String toasted = databaseError != null ?
-                        databaseError.getMessage() :
-                        String.format(Locale.FRANCE, "Course added\nDate: %s\nPupil: %s",
-                                new Date(course.getDate()).toString(),
-                                course.getPupilId()
-                        );
-                Toast.makeText(getActivity(), toasted, Toast.LENGTH_SHORT).show();
-                dismiss();
-            });
+            DatabaseReference ref = DatabaseHelper.getNodeReference(database,
+                    DatabaseHelper.Nodes.COURSES).push();
 
-        } else {
-            Log.e(getClass().getSimpleName(), "Invalid course");
+            ref.setValue(course, (databaseError, databaseReference) -> {
+
+                if(databaseError != null){
+                    showError(String.format(
+                            Locale.FRANCE, "Error while adding course\n%s",
+                            databaseError.getMessage()));
+                } else {
+                    Toast.makeText(getActivity(), String.format(Locale.FRANCE, "Course added\nDate: %s\nPupil: %s",
+                            new Date(course.getDate()).toString(),
+                            course.getPupilId()
+                        ), Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }
+            });
         }
-        return isCourseValid();
+        return true;
     }
 
     private void setDate(Calendar pCalendar, int pYear, int pMonth, int pDayOfMonth){
@@ -137,14 +144,44 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     }
 
     private boolean isCourseValid(){
+        hideError();
         if(mPupils.get(mSpinner.getSelectedItemPosition()).getID() == null){
-            Toast.makeText(getActivity(), "No id for selected pupil", Toast.LENGTH_SHORT).show();
+            showError("No id for selected pupil");
             return false;
         } else if (mCalendar.getTime().before(new Date())){
-            Toast.makeText(getActivity(), "Invalid date", Toast.LENGTH_SHORT).show();
+            showError("Invalid date");
+            return false;
+        } else if (mRGDuration.getCheckedRadioButtonId() == -1){
+            showError("Please select a duration for the course");
             return false;
         } else {
             return true;
         }
+    }
+
+    private Course extractCourseFromUI(){
+        String pupilId = mPupils.get(mSpinner.getSelectedItemPosition()).getID();
+        long duration = 0;
+        switch(mRGDuration.getCheckedRadioButtonId()){
+            case R.id.rb60:
+                duration = 60 * 1000 * 1000;
+                break;
+            case R.id.rb90:
+                duration = 90 * 1000 * 1000;
+                break;
+            case R.id.rb120:
+                duration = 120 * 1000 * 1000;
+                break;
+        }
+        return new Course(pupilId, mCalendar.getTimeInMillis(), duration);
+    }
+
+    private void showError(String pError){
+        mTVError.setText(pError);
+        mTVError.setVisibility(View.VISIBLE);
+    }
+
+    private void hideError(){
+        mTVError.setVisibility(View.GONE);
     }
 }
