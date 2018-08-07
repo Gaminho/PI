@@ -21,7 +21,6 @@ import android.widget.Toast;
 import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.FireBaseService;
 import com.gaminho.pi.R;
-import com.gaminho.pi.activities.courses.ActivityCourse;
 import com.gaminho.pi.activities.pupils.ActivityPupil;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
@@ -33,8 +32,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +39,11 @@ import java.util.stream.Collectors;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        ListItemFragment.ListItemListener, CustomAddingDialog.OnAddingDialogListener {
+        ListItemFragment.ListItemListener {
 
     //Intent
     public final static String EXTRA_PUPILS_LIST = "m-pupils";
-    public final static String UPDATE_LIST = "update-list";
+    public final static String BROADCAST_UPDATE_LIST = "update-list";
 
     private FirebaseDatabase mDatabase;
     private Map<String, Pupil> mPupils = new HashMap<>();
@@ -57,7 +54,7 @@ public class IndexActivity extends AppCompatActivity
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
             Log.d(getClass().getSimpleName(), "New course has been added: " + dataSnapshot.getValue(Course.class).getDate());
-            Intent intent = new Intent(UPDATE_LIST);
+            Intent intent = new Intent(BROADCAST_UPDATE_LIST);
             sendBroadcast(intent);
         }
 
@@ -310,9 +307,5 @@ public class IndexActivity extends AppCompatActivity
             }
         });
     }
-
-    @Override
-    public void addItem(Object pItemToAdd) {
-        Toast.makeText(this, "User wanna add:\n" + pItemToAdd.toString(), Toast.LENGTH_SHORT).show();
-    }
+    
 }

@@ -1,64 +1,59 @@
 package com.gaminho.pi.dialogs;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 
-import com.gaminho.pi.R;
-import com.gaminho.pi.activities.ListItemFragment;
+import com.gaminho.pi.DatabaseHelper;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-public abstract class CustomAddingDialog extends DialogFragment {
+import java.util.Locale;
 
-    protected View mView;
-    protected OnAddingDialogListener mListener;
+public abstract class CustomAddingDialog extends CustomDialog {
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the Builder class for convenient dialog construction
+    public void addItem(DatabaseHelper.Nodes pNode){
+        if(isItemValid()){
+            Object item = extractItemFromUI();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        mView = getView();
-        builder.setView(mView);
-        builder.setTitle(getTitle());
-        builder.setPositiveButton("positive", (dialogInterface, i) -> {
-        });
-        builder.setNegativeButton("cancel", (dialogInterface, i) -> dismiss());
-        setUpView();
-        return builder.create();
-    }
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = DatabaseHelper.getNodeReference(database, pNode).push();
 
-    @Override
-    public void onStart() {
-        super.onStart();    //super.onStart() is where dialog.show() is actually called on the underlying dialog, so we have to do it after this point
-        AlertDialog d = (AlertDialog) getDialog();
-        if(d != null) {
-            d.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> positiveClick(d, 1));
+            ref.setValue(item, (databaseError, databaseReference) -> {
+
+                if(databaseError != null){
+                    errorWhileAdding(databaseError);
+                } else {
+                    addedSuccessfully(item);
+                    dismiss();
+                }
+            });
         }
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ListItemFragment.ListItemListener) {
-            mListener = (OnAddingDialogListener) context;
-        } else {
-            mListener = null;
-        }
+    public boolean positiveClick(DialogInterface dialogInterface, int i) {
+        addItem(getItemNode());
+        return true;
     }
 
+    abstract DatabaseHelper.Nodes getItemNode();
+    abstract boolean isItemValid();
+    abstract Object extractItemFromUI();
+    abstract TextView getErrorTextView();
+    abstract void addedSuccessfully(Object pItem);
 
-    public abstract View getView();
-    public abstract void setUpView();
-    public abstract String getTitle();
-    public abstract boolean positiveClick(DialogInterface dialogInterface, int i);
+    void showError(String pErrorMsg) {
+        getErrorTextView().setText(pErrorMsg);
+        getErrorTextView().setVisibility(View.VISIBLE);
+    }
 
-    public interface OnAddingDialogListener{
-        void addItem(Object pItemToAdd);
+    void hideError(){
+        getErrorTextView().setVisibility(View.GONE);
+    }
+
+    void errorWhileAdding(DatabaseError databaseError){
+        showError(String.format(Locale.FRANCE, "Error\n%s", databaseError.getMessage()));
     }
 }

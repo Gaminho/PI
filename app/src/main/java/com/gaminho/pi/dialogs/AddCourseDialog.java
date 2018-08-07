@@ -2,7 +2,6 @@ package com.gaminho.pi.dialogs;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +16,6 @@ import com.gaminho.pi.activities.IndexActivity;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,34 +73,6 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         return "Add course";
     }
 
-    @Override
-    public boolean positiveClick(DialogInterface dialogInterface, int i) {
-
-        if(isCourseValid()){
-            Course course = extractCourseFromUI();
-
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference ref = DatabaseHelper.getNodeReference(database,
-                    DatabaseHelper.Nodes.COURSES).push();
-
-            ref.setValue(course, (databaseError, databaseReference) -> {
-
-                if(databaseError != null){
-                    showError(String.format(
-                            Locale.FRANCE, "Error while adding course\n%s",
-                            databaseError.getMessage()));
-                } else {
-                    Toast.makeText(getActivity(), String.format(Locale.FRANCE, "Course added\nDate: %s\nPupil: %s",
-                            new Date(course.getDate()).toString(),
-                            course.getPupilId()
-                        ), Toast.LENGTH_SHORT).show();
-                    dismiss();
-                }
-            });
-        }
-        return true;
-    }
-
     private void setDate(Calendar pCalendar, int pYear, int pMonth, int pDayOfMonth){
         pCalendar.set(Calendar.YEAR, pYear);
         pCalendar.set(Calendar.MONTH, pMonth);
@@ -143,7 +112,18 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         }
     }
 
-    private boolean isCourseValid(){
+    @Override
+    TextView getErrorTextView() {
+        return mTVError;
+    }
+
+    @Override
+    DatabaseHelper.Nodes getItemNode() {
+        return DatabaseHelper.Nodes.COURSES;
+    }
+
+    @Override
+    boolean isItemValid() {
         hideError();
         if(mPupils.get(mSpinner.getSelectedItemPosition()).getID() == null){
             showError("No id for selected pupil");
@@ -159,7 +139,8 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         }
     }
 
-    private Course extractCourseFromUI(){
+    @Override
+    Course extractItemFromUI() {
         String pupilId = mPupils.get(mSpinner.getSelectedItemPosition()).getID();
         long duration = 0;
         switch(mRGDuration.getCheckedRadioButtonId()){
@@ -176,12 +157,12 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         return new Course(pupilId, mCalendar.getTimeInMillis(), duration);
     }
 
-    private void showError(String pError){
-        mTVError.setText(pError);
-        mTVError.setVisibility(View.VISIBLE);
-    }
-
-    private void hideError(){
-        mTVError.setVisibility(View.GONE);
+    @Override
+    void addedSuccessfully(Object pItem) {
+        Course course = (Course) pItem;
+        Toast.makeText(getActivity(), String.format(Locale.FRANCE, "Course added\nDate: %s\nPupil: %s",
+                new Date(course.getDate()).toString(),
+                course.getPupilId()
+        ), Toast.LENGTH_SHORT).show();
     }
 }
