@@ -1,10 +1,14 @@
 package com.gaminho.pi.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +36,20 @@ public class ListItemFragment extends Fragment {
     private List mListItems;
     private RecyclerViewAdapter mAdapter;
 
+    private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateUI();
+        }
+    };
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(mNotificationReceiver);
+    }
+
     public ListItemFragment() {
     }
 
@@ -46,10 +64,8 @@ public class ListItemFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mListItems.clear();
-        mListItems.addAll(mListener.getItems(mItemType));
-        updateTextView(String.format(Locale.FRANCE, "%d items found.", mListItems.size()));
-        mAdapter.notifyDataSetChanged();
+        getActivity().registerReceiver(mNotificationReceiver, new IntentFilter(IndexActivity.UPDATE_LIST));
+        updateUI();
     }
 
     @Override
@@ -107,6 +123,13 @@ public class ListItemFragment extends Fragment {
         if (mTVCounter != null) {
             mTVCounter.setText(pMsg);
         }
+    }
+
+    private void updateUI(){
+        mListItems.clear();
+        mListItems.addAll(mListener.getItems(mItemType));
+        updateTextView(String.format(Locale.FRANCE, "%d items found.", mListItems.size()));
+        mAdapter.notifyDataSetChanged();
     }
 
     public interface ListItemListener {

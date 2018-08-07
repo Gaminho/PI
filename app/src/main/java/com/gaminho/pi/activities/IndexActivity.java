@@ -44,6 +44,7 @@ public class IndexActivity extends AppCompatActivity
 
     //Intent
     public final static String EXTRA_PUPILS_LIST = "m-pupils";
+    public final static String UPDATE_LIST = "update-list";
 
     private FirebaseDatabase mDatabase;
     private Map<String, Pupil> mPupils = new HashMap<>();
@@ -54,6 +55,8 @@ public class IndexActivity extends AppCompatActivity
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
             Log.d(getClass().getSimpleName(), "New course has been added: " + dataSnapshot.getValue(Course.class).getDate());
+            Intent intent = new Intent(UPDATE_LIST);
+            sendBroadcast(intent);
         }
 
         @Override
