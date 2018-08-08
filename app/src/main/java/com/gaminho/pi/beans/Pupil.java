@@ -6,7 +6,7 @@ public class Pupil implements Serializable {
 
     private String mID, mFirstname, mLastname;
     private float mHourPrice;
-    private int mSexe;
+    private int mSex;
     private long mCreation;
 
     public static final int GIRL = 2;
@@ -23,10 +23,10 @@ public class Pupil implements Serializable {
         this.mCreation = System.currentTimeMillis();
     }
 
-    public Pupil(String mFirstName, String mLastName, float mHourPrice, int mSexe) {
+    public Pupil(String mFirstName, String mLastName, float mHourPrice, int mSex) {
         this(mFirstName, mLastName);
         this.mHourPrice = mHourPrice;
-        this.mSexe = mSexe;
+        this.mSex = mSex;
     }
 
     public String getFirstname() {
@@ -61,20 +61,20 @@ public class Pupil implements Serializable {
         this.mCreation = mCreation;
     }
 
-    public float getmHourPrice() {
+    public float getHourPrice() {
         return mHourPrice;
     }
 
-    public void setmHourPrice(float mHourPrice) {
+    public void setHourPrice(float mHourPrice) {
         this.mHourPrice = mHourPrice;
     }
 
-    public int getmSexe() {
-        return mSexe;
+    public int getSexe() {
+        return mSex;
     }
 
-    public void setmSexe(int mSexe) {
-        this.mSexe = mSexe;
+    public void setSexe(int mSex) {
+        this.mSex = mSex;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class Pupil implements Serializable {
                 ", mFirstname='" + mFirstname + '\'' +
                 ", mLastname='" + mLastname + '\'' +
                 ", mHourPrice=" + mHourPrice +
-                ", mSexe=" + mSexe +
+                ", mSexe=" + mSex +
                 ", mCreation=" + mCreation +
                 '}';
     }

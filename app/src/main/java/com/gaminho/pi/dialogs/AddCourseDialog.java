@@ -3,8 +3,10 @@ package com.gaminho.pi.dialogs;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,12 +28,14 @@ import java.util.Locale;
 
 // TODO Deal with earned amount
 
-public class AddCourseDialog extends CustomAddingDialog implements View.OnClickListener {
+public class AddCourseDialog extends CustomAddingDialog implements View.OnClickListener,
+        RadioGroup.OnCheckedChangeListener {
 
     private List<Pupil> mPupils;
     private Calendar mCalendar;
 
     private TextView mTVDate, mTVHour;
+    private EditText mETEarnedMoney;
     private RadioGroup mRGDuration;
     private Spinner mSpinner;
 
@@ -57,6 +61,8 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         mTVDate = super.mView.findViewById(R.id.tv_date);
         mTVHour = super.mView.findViewById(R.id.tv_hour);
         mRGDuration = super.mView.findViewById(R.id.rg_class_duration);
+        mRGDuration.setOnCheckedChangeListener(this);
+        mETEarnedMoney = super.mView.findViewById(R.id.course_money);
 
         mSpinner = super.mView.findViewById(R.id.pupil_spinner);
         PupilSpinnerAdapter dataAdapter = new PupilSpinnerAdapter(getContext(),
@@ -160,5 +166,35 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
                 new Date(course.getDate()).toString(),
                 course.getPupilId()
         ), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+        if(radioGroup.getId() == R.id.rg_class_duration){
+            Log.d(getClass().getSimpleName(), "Change listener");
+
+            Pupil p = mPupils.get(mSpinner.getSelectedItemPosition());
+            Log.d(getClass().getSimpleName(), "Pupil: " + p.toString());
+
+            float hourPrice =  p.getHourPrice();
+            Log.d(getClass().getSimpleName(), "Hour price: "+ hourPrice);
+
+            if(hourPrice > 0){
+                switch(checkedId){
+                    case R.id.rb60:
+                        Log.d(getClass().getSimpleName(), "60");
+                        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", hourPrice));
+                        break;
+                    case R.id.rb90:
+                        Log.d(getClass().getSimpleName(), "90");
+                        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", (hourPrice * 1.5)));
+                        break;
+                    case R.id.rb120:
+                        Log.d(getClass().getSimpleName(), "612");
+                        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", (hourPrice * 2)));
+                        break;
+                }
+            }
+        }
     }
 }

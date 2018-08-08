@@ -59,11 +59,13 @@ public class IndexActivity extends AppCompatActivity
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
+            sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
             mCourses.remove(dataSnapshot.getKey());
+            sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override
@@ -80,6 +82,9 @@ public class IndexActivity extends AppCompatActivity
     private ChildEventListener mPupilsCEV = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Pupil p = dataSnapshot.getValue(Pupil.class);
+            Log.d(getClass().getSimpleName(), "DB: " + dataSnapshot.getValue());
+            Log.d(getClass().getSimpleName(), "Pupil: " + p);
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
             sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
@@ -87,11 +92,13 @@ public class IndexActivity extends AppCompatActivity
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
+            sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
             mPupils.remove(dataSnapshot.getKey());
+            sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override

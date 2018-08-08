@@ -3,6 +3,7 @@ package com.gaminho.pi.dialogs;
 import android.content.DialogInterface;
 
 import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.beans.Pupil;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -15,8 +16,13 @@ public abstract class CustomAddingDialog extends CustomDialog {
         if(isItemValid()){
             Object item = extractItemFromUI();
 
+
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ref = DatabaseHelper.getNodeReference(database, pNode).push();
+
+            if(item instanceof Pupil) {
+                ((Pupil) item).setID(ref.getKey());
+            }
 
             ref.setValue(item, (databaseError, databaseReference) -> {
 
