@@ -6,8 +6,9 @@ import java.io.Serializable;
 
 public class Course implements Serializable {
 
-    private String mPupilId;
+    private String mPupilId, mChapter, mComment;
     private long mDate, mDuration;
+    private float mMoney;
 
     private Pupil mPupil;
 
@@ -21,9 +22,22 @@ public class Course implements Serializable {
     }
 
     public Course(String mPupilId, long mDate, long mDuration) {
-        this.mPupilId = mPupilId;
+        this(mPupilId, mDate);
         this.mDate = mDate;
         this.mDuration = mDuration;
+    }
+
+    public Course(String mPupilId, long mDate, long mDuration, float mMoney) {
+        this(mPupilId, mDate, mDuration);
+        this.mMoney = mMoney;
+    }
+
+    public Course(String mPupilId, String mChapter, long mDate, long mDuration, float mMoney) {
+        this.mPupilId = mPupilId;
+        this.mChapter = mChapter;
+        this.mDate = mDate;
+        this.mDuration = mDuration;
+        this.mMoney = mMoney;
     }
 
     public String getPupilId() {
@@ -42,6 +56,14 @@ public class Course implements Serializable {
         this.mDate = mDate;
     }
 
+    public float getMoney() {
+        return mMoney;
+    }
+
+    public void setMoney(float mMoney) {
+        this.mMoney = mMoney;
+    }
+
     @Exclude
     public Pupil getPupil(){return mPupil;}
 
@@ -56,12 +78,31 @@ public class Course implements Serializable {
         this.mDuration = mDuration;
     }
 
+    public String getChapter() {
+        return mChapter;
+    }
+
+    public void setChapter(String mChapter) {
+        this.mChapter = mChapter;
+    }
+
+    public String getComment() {
+        return mComment;
+    }
+
+    public void setComment(String mComment) {
+        this.mComment = mComment;
+    }
+
     @Override
     public String toString() {
         return "Course{" +
                 "mPupilId='" + mPupilId + '\'' +
+                ", mChapter='" + mChapter + '\'' +
+                ", mComment='" + mComment + '\'' +
                 ", mDate=" + mDate +
                 ", mDuration=" + mDuration +
+                ", mMoney=" + mMoney +
                 '}';
     }
 }

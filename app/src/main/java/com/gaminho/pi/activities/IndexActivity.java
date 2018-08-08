@@ -82,9 +82,6 @@ public class IndexActivity extends AppCompatActivity
     private ChildEventListener mPupilsCEV = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Pupil p = dataSnapshot.getValue(Pupil.class);
-            Log.d(getClass().getSimpleName(), "DB: " + dataSnapshot.getValue());
-            Log.d(getClass().getSimpleName(), "Pupil: " + p);
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
             sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }

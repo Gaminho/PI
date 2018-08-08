@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -29,13 +30,13 @@ import java.util.Locale;
 // TODO Deal with earned amount
 
 public class AddCourseDialog extends CustomAddingDialog implements View.OnClickListener,
-        RadioGroup.OnCheckedChangeListener {
+        RadioGroup.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 
     private List<Pupil> mPupils;
     private Calendar mCalendar;
 
     private TextView mTVDate, mTVHour;
-    private EditText mETEarnedMoney;
+    private EditText mETEarnedMoney, mETChapter;
     private RadioGroup mRGDuration;
     private Spinner mSpinner;
 
@@ -63,6 +64,7 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         mRGDuration = super.mView.findViewById(R.id.rg_class_duration);
         mRGDuration.setOnCheckedChangeListener(this);
         mETEarnedMoney = super.mView.findViewById(R.id.course_money);
+        mETChapter = super.mView.findViewById(R.id.course_chapter);
 
         mSpinner = super.mView.findViewById(R.id.pupil_spinner);
         PupilSpinnerAdapter dataAdapter = new PupilSpinnerAdapter(getContext(),
@@ -70,6 +72,7 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(dataAdapter);
+        mSpinner.setOnItemSelectedListener(this);
 
         super.mView.findViewById(R.id.btn_datepicker).setOnClickListener(this);
         super.mView.findViewById(R.id.btn_hourpicker).setOnClickListener(this);
@@ -127,17 +130,31 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     @Override
     boolean isItemValid() {
         hideError();
-        if(mPupils.get(mSpinner.getSelectedItemPosition()).getID() == null){
-            showError("No id for selected pupil");
+        try{
+            if(mPupils.get(mSpinner.getSelectedItemPosition()).getID() == null){
+                showError("No id for selected pupil");
+                return false;
+            } else if (mCalendar.getTime().before(new Date())){
+                showError("Invalid date");
+                return false;
+            } else if (mRGDuration.getCheckedRadioButtonId() == -1){
+                showError("Please select a duration for the course");
+                return false;
+            } else if (mETEarnedMoney.getText() == null
+                    || Float.parseFloat(mETEarnedMoney.getText().toString()) <= 0){
+                showError("Invalid earned money amount");
+                return false;
+            } else if (mETChapter.getText().toString().length() > 0 && mETChapter.getText().toString().length() < 3){
+                Log.d(getClass().getSimpleName(), "null?" + String.valueOf(mETChapter.getText()==null));
+                Log.d(getClass().getSimpleName(), "null?"+mETChapter.getText().toString().length());
+                showError("Invalid chapter name");
+                return false;
+            } else {
+                return true;
+            }
+        } catch(Exception e){
+            showError(e.getMessage());
             return false;
-        } else if (mCalendar.getTime().before(new Date())){
-            showError("Invalid date");
-            return false;
-        } else if (mRGDuration.getCheckedRadioButtonId() == -1){
-            showError("Please select a duration for the course");
-            return false;
-        } else {
-            return true;
         }
     }
 
@@ -145,7 +162,8 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     Course extractItemFromUI() {
         String pupilId = mPupils.get(mSpinner.getSelectedItemPosition()).getID();
         long duration = 0;
-        switch(mRGDuration.getCheckedRadioButtonId()){
+        float money = Float.parseFloat(mETEarnedMoney.getText().toString());
+        switch (mRGDuration.getCheckedRadioButtonId()) {
             case R.id.rb60:
                 duration = 60 * 1000 * 1000;
                 break;
@@ -156,7 +174,14 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
                 duration = 120 * 1000 * 1000;
                 break;
         }
-        return new Course(pupilId, mCalendar.getTimeInMillis(), duration);
+
+        Course course = new Course(pupilId, mCalendar.getTimeInMillis(), duration, money);
+
+        if(mETChapter.getText().toString().length() > 0){
+            course.setChapter(mETChapter.getText().toString());
+        }
+
+        return course;
     }
 
     @Override
@@ -171,30 +196,38 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
         if(radioGroup.getId() == R.id.rg_class_duration){
-            Log.d(getClass().getSimpleName(), "Change listener");
+            updateMoneyAmount(mSpinner.getSelectedItemPosition());
+        }
+    }
 
-            Pupil p = mPupils.get(mSpinner.getSelectedItemPosition());
-            Log.d(getClass().getSimpleName(), "Pupil: " + p.toString());
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        updateMoneyAmount(i);
+    }
 
-            float hourPrice =  p.getHourPrice();
-            Log.d(getClass().getSimpleName(), "Hour price: "+ hourPrice);
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+    }
 
-            if(hourPrice > 0){
-                switch(checkedId){
-                    case R.id.rb60:
-                        Log.d(getClass().getSimpleName(), "60");
-                        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", hourPrice));
-                        break;
-                    case R.id.rb90:
-                        Log.d(getClass().getSimpleName(), "90");
-                        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", (hourPrice * 1.5)));
-                        break;
-                    case R.id.rb120:
-                        Log.d(getClass().getSimpleName(), "612");
-                        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", (hourPrice * 2)));
-                        break;
-                }
+    private void updateMoneyAmount(int pPupilPosition){
+
+        Pupil p = mPupils.get(pPupilPosition);
+        float hourPrice =  p.getHourPrice();
+
+        if(hourPrice > 0) {
+            switch (mRGDuration.getCheckedRadioButtonId()) {
+                case R.id.rb90:
+                    hourPrice = (float) (1.5 * hourPrice);
+                    break;
+                case R.id.rb120:
+                    hourPrice = 2 * hourPrice;
+                    break;
+                default:
+                    break;
             }
         }
+
+        mETEarnedMoney.setText(String.format(Locale.FRANCE, "%.2f", hourPrice)
+                .replace(",", "."));
     }
 }
