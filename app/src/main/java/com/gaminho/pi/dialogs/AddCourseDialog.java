@@ -27,8 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-// TODO Deal with earned amount
-
 public class AddCourseDialog extends CustomAddingDialog implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 

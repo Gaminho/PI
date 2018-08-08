@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Pupil implements Serializable {
 
-    private String mID, mFirstname, mLastname;
+    private String mID, mFirstname, mLastname, mPhone, mParentPhone;
     private float mHourPrice;
     private int mSex;
     private long mCreation;
@@ -77,14 +77,32 @@ public class Pupil implements Serializable {
         this.mSex = mSex;
     }
 
+    public String getPhone() {
+        return mPhone;
+    }
+
+    public void setPhone(String mPhone) {
+        this.mPhone = mPhone;
+    }
+
+    public String getParentPhone() {
+        return mParentPhone;
+    }
+
+    public void setParentPhone(String mParentPhone) {
+        this.mParentPhone = mParentPhone;
+    }
+
     @Override
     public String toString() {
         return "Pupil{" +
                 "mID='" + mID + '\'' +
                 ", mFirstname='" + mFirstname + '\'' +
                 ", mLastname='" + mLastname + '\'' +
+                ", mPhone='" + mPhone + '\'' +
+                ", mParentPhone='" + mParentPhone + '\'' +
                 ", mHourPrice=" + mHourPrice +
-                ", mSexe=" + mSex +
+                ", mSex=" + mSex +
                 ", mCreation=" + mCreation +
                 '}';
     }

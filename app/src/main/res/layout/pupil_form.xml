@@ -52,6 +52,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="10dp"
+        android:text="Coordonnées"
+        android:textColor="@color/black"/>
+
+    <EditText
+        android:id="@+id/pupil_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Phone"/>
+
+    <EditText
+        android:id="@+id/pupil_phone_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Parent phone"/>
+
+    <EditText
+        android:id="@+id/pupil_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textAutoCorrect|textAutoComplete|text"
+        android:hint="Address"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
         android:text="Rémunération"
         android:textColor="@color/black"/>
 
