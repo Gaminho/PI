@@ -1,8 +1,6 @@
 package com.gaminho.pi.dialogs;
 
 import android.content.DialogInterface;
-import android.view.View;
-import android.widget.TextView;
 
 import com.gaminho.pi.DatabaseHelper;
 import com.google.firebase.database.DatabaseError;
@@ -41,17 +39,7 @@ public abstract class CustomAddingDialog extends CustomDialog {
     abstract DatabaseHelper.Nodes getItemNode();
     abstract boolean isItemValid();
     abstract Object extractItemFromUI();
-    abstract TextView getErrorTextView();
     abstract void addedSuccessfully(Object pItem);
-
-    void showError(String pErrorMsg) {
-        getErrorTextView().setText(pErrorMsg);
-        getErrorTextView().setVisibility(View.VISIBLE);
-    }
-
-    void hideError(){
-        getErrorTextView().setVisibility(View.GONE);
-    }
 
     void errorWhileAdding(DatabaseError databaseError){
         showError(String.format(Locale.FRANCE, "Error\n%s", databaseError.getMessage()));

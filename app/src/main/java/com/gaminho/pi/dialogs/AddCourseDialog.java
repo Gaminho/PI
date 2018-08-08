@@ -24,12 +24,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+// TODO Deal with earned amount
+
 public class AddCourseDialog extends CustomAddingDialog implements View.OnClickListener {
 
     private List<Pupil> mPupils;
     private Calendar mCalendar;
 
-    private TextView mTVDate, mTVHour, mTVError;
+    private TextView mTVDate, mTVHour;
     private RadioGroup mRGDuration;
     private Spinner mSpinner;
 
@@ -52,13 +54,9 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
 
     @Override
     public void setUpView(){
-        super.mView.findViewById(R.id.btn_datepicker).setOnClickListener(this);
-        super.mView.findViewById(R.id.btn_hourpicker).setOnClickListener(this);
         mTVDate = super.mView.findViewById(R.id.tv_date);
         mTVHour = super.mView.findViewById(R.id.tv_hour);
-        mTVError = super.mView.findViewById(R.id.tv_error);
         mRGDuration = super.mView.findViewById(R.id.rg_class_duration);
-        mTVError.setVisibility(View.GONE);
 
         mSpinner = super.mView.findViewById(R.id.pupil_spinner);
         PupilSpinnerAdapter dataAdapter = new PupilSpinnerAdapter(getContext(),
@@ -66,6 +64,9 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
 
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(dataAdapter);
+
+        super.mView.findViewById(R.id.btn_datepicker).setOnClickListener(this);
+        super.mView.findViewById(R.id.btn_hourpicker).setOnClickListener(this);
     }
 
     @Override
@@ -110,11 +111,6 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
                 ).show();
                 break;
         }
-    }
-
-    @Override
-    TextView getErrorTextView() {
-        return mTVError;
     }
 
     @Override

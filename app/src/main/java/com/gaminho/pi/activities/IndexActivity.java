@@ -21,17 +21,17 @@ import android.widget.Toast;
 import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.FireBaseService;
 import com.gaminho.pi.R;
-import com.gaminho.pi.activities.pupils.ActivityPupil;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
 import com.gaminho.pi.dialogs.AddCourseDialog;
-import com.gaminho.pi.dialogs.CustomAddingDialog;
+import com.gaminho.pi.dialogs.AddPupilDialog;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +53,7 @@ public class IndexActivity extends AppCompatActivity
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
-            Log.d(getClass().getSimpleName(), "New course has been added: " + dataSnapshot.getValue(Course.class).getDate());
-            Intent intent = new Intent(BROADCAST_UPDATE_LIST);
-            sendBroadcast(intent);
+            sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override
@@ -83,6 +81,7 @@ public class IndexActivity extends AppCompatActivity
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
+            sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override
@@ -257,7 +256,7 @@ public class IndexActivity extends AppCompatActivity
                 //startActivity(intent);
                 break;
             case ListItemFragment.LIST_PUPIL:
-                startActivity(new Intent(this, ActivityPupil.class));
+                new AddPupilDialog().show(getFragmentManager(), "MyPupilAddingDialog");
                 break;
         }
     }
@@ -274,11 +273,12 @@ public class IndexActivity extends AppCompatActivity
         switch (pListType){
             case ListItemFragment.LIST_COURSE:
                 items.addAll(mCourses.values().stream().filter(course -> course.getPupil() != null).sorted(
-                        (course1, course2) -> Long.valueOf(course2.getDate()).compareTo(course1.getDate())
-                ).collect(Collectors.toList()));
+                        (course1, course2) -> Long.valueOf(course2.getDate()).compareTo(course1.getDate()))
+                        .collect(Collectors.toList()));
                 break;
             case ListItemFragment.LIST_PUPIL:
-                items.addAll(mPupils.values());
+                items.addAll(mPupils.values().stream().sorted(Comparator.comparing(Pupil::getFirstname))
+                        .collect(Collectors.toList()));
                 break;
         }
         return items;

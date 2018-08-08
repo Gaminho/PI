@@ -5,19 +5,32 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.gaminho.pi.R;
 
 public abstract class CustomDialog extends DialogFragment {
 
     protected View mView;
+    private TextView mTVError;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.default_dialog, null);
+
+        mTVError = view.findViewById(R.id.tv_error);
+        mTVError.setVisibility(View.GONE);
+
         mView = getView();
-        builder.setView(mView);
+        ((FrameLayout) view.findViewById(R.id.dialog_content)).addView(mView);
+
+        builder.setView(view);
         setUpView();
 
         builder.setTitle(getTitle());
@@ -40,4 +53,13 @@ public abstract class CustomDialog extends DialogFragment {
     public abstract void setUpView();
     public abstract String getTitle();
     public abstract boolean positiveClick(DialogInterface dialogInterface, int i);
+
+    void showError(String pErrorMsg) {
+        mTVError.setText(pErrorMsg);
+        mTVError.setVisibility(View.VISIBLE);
+    }
+
+    void hideError(){
+        mTVError.setVisibility(View.GONE);
+    }
 }
