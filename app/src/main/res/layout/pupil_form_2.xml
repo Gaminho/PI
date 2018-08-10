@@ -39,14 +39,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapWords"
-        android:hint="@string/pupil_first_name"/>
+        android:hint="Firstname"/>
 
     <EditText
         android:id="@+id/pupil_last_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapWords"
-        android:hint="@string/pupil_last_name"/>
+        android:hint="Lastname"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -60,34 +60,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="phone"
-        android:hint="@string/pupil_phone"/>
+        android:hint="Phone"/>
 
     <EditText
         android:id="@+id/pupil_phone_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="phone"
-        android:hint="@string/pupil_phone_parent"/>
+        android:hint="Parent phone"/>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/pupil_address"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:hint="Address"/>
+        <!--android:inputType="textAutoCorrect|textAutoComplete|text"-->
 
-        <TextView
-            android:id="@+id/tv_address"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="@string/pupil_no_address"/>
-
-        <Button
-            android:id="@+id/btn_address"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/pupil_address"/>
-
-    </LinearLayout>
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -101,6 +94,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
-        android:hint="@string/pupil_hourly_price"/>
+        android:hint="Hourly price"/>
 
 </LinearLayout>

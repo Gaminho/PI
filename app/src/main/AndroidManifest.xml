@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.pupils.ActivityPupil"/>
         <activity android:name=".activities.courses.ActivityCourse"/>
         <activity
             android:name=".activities.IndexActivity"
@@ -27,6 +26,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--<activity-->
+            <!--android:name=".dialogs.DialogActivity"-->
+            <!--android:theme="@android:style/Theme.Holo.Light.Dialog"/>-->
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAO9FZUv84yvws5retESCw9-CP47sIYPSc" />
 
         <service
             android:name="FireBaseService"

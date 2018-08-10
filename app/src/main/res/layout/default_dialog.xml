@@ -5,12 +5,7 @@
     android:layout_margin="@dimen/fab_margin"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/dialog_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"/>
-
+    <!--TODO Deal with offset while phone error-->
     <TextView
         android:id="@+id/tv_error"
         android:layout_width="match_parent"
@@ -18,5 +13,17 @@
         android:textColor="#FF0000"
         android:text="Error"
         android:layout_marginStart="@dimen/fab_margin"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin">
+
+        <FrameLayout
+            android:id="@+id/dialog_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </ScrollView>
 
 </LinearLayout>

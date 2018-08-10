@@ -15,4 +15,22 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
+    <!--FORMS-->
+    <!--PUPIL-->
+    <string name="pupil_no_sex">No specified sex</string>
+    <string name="pupil_first_name">First name</string>
+    <string name="pupil_invalid_first_name">Invalid first name</string>
+    <string name="pupil_last_name">Last name</string>
+    <string name="pupil_invalid_last_name">Invalid last name</string>
+    <string name="pupil_phone">Phone</string>
+    <string name="pupil_invalid_phone">Invalid phone</string>
+    <string name="pupil_phone_parent">Parent phone</string>
+    <string name="pupil_invalid_phone_parent">Invalid parent phone</string>
+    <string name="pupil_address">Address</string>
+    <string name="pupil_invalid_address">Invalid address</string>
+    <string name="pupil_no_address">No specified address</string>
+    <string name="pupil_hourly_price">Hourly price</string>
+    <string name="pupil_invalid_hourly_price">Invalid price</string>
+
+
 </resources>

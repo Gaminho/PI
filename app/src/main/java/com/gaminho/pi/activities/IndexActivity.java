@@ -25,6 +25,7 @@ import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
 import com.gaminho.pi.dialogs.AddCourseDialog;
 import com.gaminho.pi.dialogs.AddPupilDialog;
+import com.gaminho.pi.dialogs.DialogActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -83,6 +84,8 @@ public class IndexActivity extends AppCompatActivity
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
+            Log.d(getClass().getSimpleName(), "OnChildAdded: " + dataSnapshot.getValue());
+            Log.d(getClass().getSimpleName(), "OnChildAdded: " + dataSnapshot.getValue(Pupil.class));
             sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
@@ -240,9 +243,10 @@ public class IndexActivity extends AppCompatActivity
     @Override
     public void selectItem(Object pItem) {
         StringBuffer strB = new StringBuffer("Click on ");
-        strB.append(pItem instanceof Course ?
-                "a course with date: " + ((Course) pItem).getDate()
-                : "a pupil with id: : " + ((Pupil)pItem). getFirstname());
+        strB.append(pItem.toString());
+//        strB.append(pItem instanceof Course ?
+//                "a course with date: " + ((Course) pItem).getDate()
+//                : "a pupil with id: : " + ((Pupil)pItem). getFirstname());
         Toast.makeText( this, strB.toString(),Toast.LENGTH_SHORT).show();
     }
 
@@ -260,6 +264,8 @@ public class IndexActivity extends AppCompatActivity
                 //startActivity(intent);
                 break;
             case ListItemFragment.LIST_PUPIL:
+//                Intent i = new Intent(IndexActivity.this, DialogActivity.class);
+//                startActivity(i);
                 new AddPupilDialog().show(getFragmentManager(), "MyPupilAddingDialog");
                 break;
         }

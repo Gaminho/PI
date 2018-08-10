@@ -1,5 +1,7 @@
 package com.gaminho.pi.beans;
 
+import com.google.android.gms.location.places.Place;
+
 import java.io.Serializable;
 
 public class Pupil implements Serializable {
@@ -8,6 +10,7 @@ public class Pupil implements Serializable {
     private float mHourPrice;
     private int mSex;
     private long mCreation;
+    private MyPlace pPlace;
 
     public static final int GIRL = 2;
     public static final int BOY = 3;
@@ -93,6 +96,18 @@ public class Pupil implements Serializable {
         this.mParentPhone = mParentPhone;
     }
 
+    public MyPlace getPlace() {
+        return pPlace;
+    }
+
+    public void setPlace(MyPlace pPlace) {
+        this.pPlace = pPlace;
+    }
+
+    public void setGooglePlace(Place pPlace) {
+        this.pPlace = new MyPlace(pPlace);
+    }
+
     @Override
     public String toString() {
         return "Pupil{" +
@@ -104,6 +119,7 @@ public class Pupil implements Serializable {
                 ", mHourPrice=" + mHourPrice +
                 ", mSex=" + mSex +
                 ", mCreation=" + mCreation +
+                ", pPlace=" + pPlace +
                 '}';
     }
 }

@@ -1,6 +1,7 @@
 package com.gaminho.pi.dialogs;
 
 import android.content.DialogInterface;
+import android.util.Log;
 
 import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.beans.Pupil;
@@ -22,6 +23,7 @@ public abstract class CustomAddingDialog extends CustomDialog {
 
             if(item instanceof Pupil) {
                 ((Pupil) item).setID(ref.getKey());
+                Log.d(getClass().getSimpleName(), "Pupil to add: " + item.toString());
             }
 
             ref.setValue(item, (databaseError, databaseReference) -> {
