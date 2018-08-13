@@ -249,9 +249,6 @@ public class IndexActivity extends AppCompatActivity
     public void selectItem(Object pItem) {
         StringBuffer strB = new StringBuffer("Click on ");
         strB.append(pItem.toString());
-//        strB.append(pItem instanceof Course ?
-//                "a course with date: " + ((Course) pItem).getDate()
-//                : "a pupil with id: : " + ((Pupil)pItem). getFirstname());
         Toast.makeText( this, strB.toString(),Toast.LENGTH_SHORT).show();
     }
 
