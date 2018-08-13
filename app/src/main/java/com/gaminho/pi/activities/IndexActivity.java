@@ -25,7 +25,6 @@ import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
 import com.gaminho.pi.dialogs.AddCourseDialog;
 import com.gaminho.pi.dialogs.AddPupilDialog;
-import com.gaminho.pi.dialogs.DialogActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        ListItemFragment.ListItemListener {
+        FirebaseFragment.FirebaseDataListener, ListItemFragment.ListItemListener {
 
     //Intent
     public final static String EXTRA_PUPILS_LIST = "m-pupils";
@@ -180,6 +179,9 @@ public class IndexActivity extends AppCompatActivity
 
         mDatabase = FirebaseDatabase.getInstance();
         mDatabase.setPersistenceEnabled(true);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.drawer_content, new FragmentWeek()).commit();
     }
 
     @Override
@@ -230,6 +232,9 @@ public class IndexActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_share) {
+            fragment = FragmentWeek.newInstance();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_send) {
 
         }
