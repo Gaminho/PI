@@ -178,7 +178,6 @@ public class IndexActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mDatabase = FirebaseDatabase.getInstance();
-        mDatabase.setPersistenceEnabled(true);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.drawer_content, new FragmentWeek()).commit();
