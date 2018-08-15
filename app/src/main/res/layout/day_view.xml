@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    card_view:cardCornerRadius="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Day info (label, number, month) -->
+            <LinearLayout
+                android:id="@+id/tv_day_lay"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="2dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_day_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textSize="12dp"
+                    android:gravity="center_horizontal|bottom"/>
+
+                <TextView
+                    android:id="@+id/tv_day_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/tv_day_month"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textSize="12dp"
+                    android:gravity="center_horizontal|top"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/separator"
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_toEndOf="@id/tv_day_lay"
+                android:background="@color/colorPrimaryDark"/>
+
+            <TextView
+                android:id="@+id/tv_day_content"
+                android:layout_toEndOf="@+id/separator"
+                android:layout_toStartOf="@+id/day_edit_course"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:textColor="@color/black"
+                android:paddingLeft="@dimen/fab_margin" />
+
+            <Button
+                android:id="@+id/day_add_course"
+                android:background="@drawable/selector_add_button"
+                android:layout_width="@dimen/icon_action_size"
+                android:layout_height="@dimen/icon_action_size"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="1dp"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/day_edit_course"
+                android:background="@drawable/selector_edit_button"
+                android:layout_width="@dimen/icon_action_size"
+                android:layout_height="@dimen/icon_action_size"
+                android:layout_toStartOf="@+id/day_add_course"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center_vertical"/>
+
+        </RelativeLayout>
+
+        <com.gaminho.pi.views.DetailsCourse
+            android:id="@+id/list_courses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
+

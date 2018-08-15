@@ -50,8 +50,8 @@ public class AddPupilDialog extends CustomAddingDialog {
 
 
     @Override
-    public View getView() {
-        return LayoutInflater.from(getActivity()).inflate(R.layout.pupil_form, null);
+    public int getViewResourceId() {
+        return R.layout.pupil_form;
     }
 
     @Override

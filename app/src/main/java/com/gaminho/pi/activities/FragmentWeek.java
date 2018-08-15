@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,9 @@ import android.widget.TextView;
 
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Course;
+import com.gaminho.pi.dialogs.AddCourseDialog;
+import com.gaminho.pi.views.DayView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -110,12 +110,12 @@ public class FragmentWeek extends FirebaseFragment {
     }
 
 
-    public static class FragmentAWeek extends FirebaseFragment {
+    public static class FragmentAWeek extends FirebaseFragment implements DayView.DayViewListener {
 
         private int mOffset;
         private Date mStartDate, mEndDate;
         private TextView mTVCourses, mTVMoney;
-        private List<CardView> mCVDays = new ArrayList<>();
+        private List<DayView> mDayViews = new ArrayList<>();
         private static final int ONE_DAY = 1000 * 60 * 60 * 24;
 
 
@@ -172,62 +172,34 @@ public class FragmentWeek extends FirebaseFragment {
             mTVCourses = view.findViewById(R.id.tv_nb_courses);
             mTVMoney = view.findViewById(R.id.tv_nb_money);
 
-            mCVDays.add(view.findViewById(R.id.lay_day_1));
-            mCVDays.add(view.findViewById(R.id.lay_day_2));
-            mCVDays.add(view.findViewById(R.id.lay_day_3));
-            mCVDays.add(view.findViewById(R.id.lay_day_4));
-            mCVDays.add(view.findViewById(R.id.lay_day_5));
-            mCVDays.add(view.findViewById(R.id.lay_day_6));
-            mCVDays.add(view.findViewById(R.id.lay_day_7));
+            mDayViews.add(view.findViewById(R.id.day_view_1));
+            mDayViews.add(view.findViewById(R.id.day_view_2));
+            mDayViews.add(view.findViewById(R.id.day_view_3));
+            mDayViews.add(view.findViewById(R.id.day_view_4));
+            mDayViews.add(view.findViewById(R.id.day_view_5));
+            mDayViews.add(view.findViewById(R.id.day_view_6));
+            mDayViews.add(view.findViewById(R.id.day_view_7));
 
-            Calendar cal = Calendar.getInstance();
-            int currentDay = cal.get(Calendar.DAY_OF_YEAR);
+            Calendar cal = Calendar.getInstance(Locale.FRENCH);
             cal.setTime(mStartDate);
 
-            for(CardView cv : mCVDays) {
-                ((TextView) cv.findViewById(R.id.tv_day_month)).setText(
-                        new SimpleDateFormat("MMM", Locale.FRANCE).format(cal.getTime()));
-                ((TextView) cv.findViewById(R.id.tv_day_label)).setText(
-                        new SimpleDateFormat("EE", Locale.FRANCE).format(cal.getTime()));
-                ((TextView) cv.findViewById(R.id.tv_day_number)).setText(
-                        String.format(Locale.FRANCE, "%02d", cal.get(Calendar.DAY_OF_MONTH)));
-
-                if(currentDay == cal.get(Calendar.DAY_OF_YEAR)){
-                    cv.findViewById(R.id.tv_day_lay).setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    ((TextView) cv.findViewById(R.id.tv_day_number)).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                    ((TextView) cv.findViewById(R.id.tv_day_label)).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                    ((TextView) cv.findViewById(R.id.tv_day_month)).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                }
-
+            for(DayView dv : mDayViews) {
+                dv.setDate(cal.getTime());
+                dv.addOnDayViewListener(this);
                 cal.add(Calendar.DAY_OF_YEAR, 1);
             }
 
             return view;
         }
 
-        private void fillDayViews(){
 
-            SimpleDateFormat sdf = new SimpleDateFormat("HH'h'MM");
+        private void fillDayViews(){
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(mStartDate);
 
-            for(CardView cv : mCVDays) {
-
-                List<Course> courses = filterCourseByDay(getListCourses(), cal.getTimeInMillis());
-
-                if(!courses.isEmpty()){
-                    String str = courses.stream().map(course ->
-                            String.format(
-                                    Locale.FRANCE, "%s - %s : %s %s",
-                                    sdf.format(new Date(course.getDate())),
-                                    sdf.format(new Date(course.getDate() + course.getDuration())),
-                                    course.getPupil().getFirstname(), course.getPupil().getLastname()))
-                            .collect(Collectors.joining("\n"));
-
-                    ((TextView) cv.findViewById(R.id.tv_day_content)).setText(str);
-                }
-
+            for(DayView dv : mDayViews) {
+                dv.setDayCourses(filterCourseByDay(getListCourses(), cal.getTimeInMillis()));
                 cal.add(Calendar.DAY_OF_YEAR, 1);
             }
         }
@@ -236,6 +208,16 @@ public class FragmentWeek extends FirebaseFragment {
             return pCourses.stream().filter(course ->
                     course.getDate() >= midnightTS && course.getDate() < (midnightTS + ONE_DAY))
                     .collect(Collectors.toList());
+        }
+
+        @Override
+        public void addCourse(Date mDate) {
+            AddCourseDialog a = new AddCourseDialog();
+            Bundle args = new Bundle();
+            args.putSerializable(AddCourseDialog.EXTRA_PUPILS_LIST, new ArrayList<>(mListener.getItems(ListItemFragment.LIST_PUPIL)));
+            args.putSerializable(AddCourseDialog.EXTRA_DATE, mDate);
+            a.setArguments(args);
+            a.show(getActivity().getFragmentManager(), "MyAddingDialog");
         }
     }
 }

@@ -17,13 +17,11 @@ public abstract class CustomAddingDialog extends CustomDialog {
         if(isItemValid()){
             Object item = extractItemFromUI();
 
-
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference ref = DatabaseHelper.getNodeReference(database, pNode).push();
 
             if(item instanceof Pupil) {
                 ((Pupil) item).setID(ref.getKey());
-                Log.d(getClass().getSimpleName(), "Pupil to add: " + item.toString());
             }
 
             ref.setValue(item, (databaseError, databaseReference) -> {

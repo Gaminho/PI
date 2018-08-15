@@ -14,6 +14,7 @@ import com.gaminho.pi.activities.IndexActivity;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
+import com.gaminho.pi.dialogs.AddCourseDialog;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -36,7 +37,7 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
         mCalendar = Calendar.getInstance();
         mSpinPupil = findViewById(R.id.pupil_spinner);
 
-        List<Pupil> ps = (List<Pupil>) getIntent().getSerializableExtra(IndexActivity.EXTRA_PUPILS_LIST);
+        List<Pupil> ps = (List<Pupil>) getIntent().getSerializableExtra(AddCourseDialog.EXTRA_PUPILS_LIST);
         fillSpinner(ps);
 
         findViewById(R.id.btn_datepicker).setOnClickListener(this);

@@ -3,8 +3,6 @@ package com.gaminho.pi.dialogs;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 
 import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.R;
-import com.gaminho.pi.activities.IndexActivity;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
@@ -30,6 +27,10 @@ import java.util.Locale;
 public class AddCourseDialog extends CustomAddingDialog implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
 
+    public final static String EXTRA_PUPILS_LIST = "m-pupils";
+    public final static String EXTRA_DATE = "m-date";
+
+
     private List<Pupil> mPupils;
     private Calendar mCalendar;
 
@@ -41,18 +42,23 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null && getArguments().getSerializable(IndexActivity.EXTRA_PUPILS_LIST) != null){
-            mPupils = (List<Pupil>) getArguments().getSerializable(IndexActivity.EXTRA_PUPILS_LIST);
-        } else {
-            mPupils = new ArrayList<>();
-        }
 
         mCalendar = Calendar.getInstance();
+
+        if(getArguments() != null) {
+
+            mPupils = getArguments().getSerializable(EXTRA_PUPILS_LIST) != null ?
+                    (List<Pupil>) getArguments().getSerializable(EXTRA_PUPILS_LIST) : new ArrayList<>();
+
+            if(getArguments().getSerializable(EXTRA_DATE) != null){
+                mCalendar.setTime((Date) getArguments().getSerializable(EXTRA_DATE));
+            }
+        }
     }
 
     @Override
-    public View getView() {
-        return LayoutInflater.from(getActivity()).inflate(R.layout.class_form, null);
+    public int getViewResourceId() {
+        return R.layout.class_form;
     }
 
     @Override
@@ -61,6 +67,7 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         mTVHour = super.mView.findViewById(R.id.tv_hour);
         mRGDuration = super.mView.findViewById(R.id.rg_class_duration);
         mRGDuration.setOnCheckedChangeListener(this);
+
         mETEarnedMoney = super.mView.findViewById(R.id.course_money);
         mETChapter = super.mView.findViewById(R.id.course_chapter);
 
@@ -74,6 +81,11 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
 
         super.mView.findViewById(R.id.btn_datepicker).setOnClickListener(this);
         super.mView.findViewById(R.id.btn_hourpicker).setOnClickListener(this);
+
+
+        setDate(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
+                mCalendar.get(Calendar.DAY_OF_MONTH));
+        setHour(mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
     }
 
     @Override
@@ -81,21 +93,21 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         return "Add course";
     }
 
-    private void setDate(Calendar pCalendar, int pYear, int pMonth, int pDayOfMonth){
-        pCalendar.set(Calendar.YEAR, pYear);
-        pCalendar.set(Calendar.MONTH, pMonth);
-        pCalendar.set(Calendar.DAY_OF_MONTH, pDayOfMonth);
+    private void setDate(int pYear, int pMonth, int pDayOfMonth){
+        mCalendar.set(Calendar.YEAR, pYear);
+        mCalendar.set(Calendar.MONTH, pMonth);
+        mCalendar.set(Calendar.DAY_OF_MONTH, pDayOfMonth);
         mTVDate.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
-                .format(pCalendar.getTime()));
+                .format(mCalendar.getTime()));
     }
 
-    private void setHour(Calendar pCalendar, int pHour, int pMinute){
-        pCalendar.set(Calendar.HOUR_OF_DAY, pHour);
-        pCalendar.set(Calendar.MINUTE, pMinute);
-        pCalendar.set(Calendar.SECOND, 0);
-        pCalendar.set(Calendar.MILLISECOND, 0);
+    private void setHour(int pHour, int pMinute){
+        mCalendar.set(Calendar.HOUR_OF_DAY, pHour);
+        mCalendar.set(Calendar.MINUTE, pMinute);
+        mCalendar.set(Calendar.SECOND, 0);
+        mCalendar.set(Calendar.MILLISECOND, 0);
         mTVHour.setText(new SimpleDateFormat("HH:mm", Locale.FRANCE)
-                .format(pCalendar.getTime()));
+                .format(mCalendar.getTime()));
     }
 
     @Override
@@ -103,19 +115,13 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         switch(view.getId()){
             case R.id.btn_datepicker:
                 new DatePickerDialog(getActivity(), (v, year, monthOfYear, dayOfMonth) ->
-                        setDate(mCalendar, year, monthOfYear, dayOfMonth),
-                        mCalendar.get(Calendar.YEAR),
-                        mCalendar.get(Calendar.MONTH),
-                        mCalendar.get(Calendar.DAY_OF_MONTH)
-                ).show();
+                        setDate(year, monthOfYear, dayOfMonth), mCalendar.get(Calendar.YEAR),
+                        mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH)).show();
                 break;
             case R.id.btn_hourpicker:
                 new TimePickerDialog(getActivity(), (v, hour, minute) ->
-                        setHour(mCalendar, hour, minute),
-                        mCalendar.get(Calendar.HOUR_OF_DAY),
-                        mCalendar.get(Calendar.MINUTE),
-                        true
-                ).show();
+                        setHour(hour, minute), mCalendar.get(Calendar.HOUR_OF_DAY),
+                        mCalendar.get(Calendar.MINUTE), true).show();
                 break;
         }
     }
@@ -143,8 +149,6 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
                 showError("Invalid earned money amount");
                 return false;
             } else if (mETChapter.getText().toString().length() > 0 && mETChapter.getText().toString().length() < 3){
-                Log.d(getClass().getSimpleName(), "null?" + String.valueOf(mETChapter.getText()==null));
-                Log.d(getClass().getSimpleName(), "null?"+mETChapter.getText().toString().length());
                 showError("Invalid chapter name");
                 return false;
             } else {
@@ -163,13 +167,13 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
         float money = Float.parseFloat(mETEarnedMoney.getText().toString());
         switch (mRGDuration.getCheckedRadioButtonId()) {
             case R.id.rb60:
-                duration = 60 * 1000 * 1000;
+                duration = 60;
                 break;
             case R.id.rb90:
-                duration = 90 * 1000 * 1000;
+                duration = 90;
                 break;
             case R.id.rb120:
-                duration = 120 * 1000 * 1000;
+                duration = 120;
                 break;
         }
 
@@ -199,8 +203,8 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        updateMoneyAmount(i);
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+        updateMoneyAmount(position);
     }
 
     @Override

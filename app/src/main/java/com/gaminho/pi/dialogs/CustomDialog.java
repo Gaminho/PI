@@ -5,10 +5,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -29,7 +27,7 @@ public abstract class CustomDialog extends DialogFragment {
         mTVError = view.findViewById(R.id.tv_error);
         mTVError.setVisibility(View.GONE);
 
-        mView = getView();
+        mView = LayoutInflater.from(getActivity()).inflate(getViewResourceId(), null);
         ((FrameLayout) view.findViewById(R.id.dialog_content)).addView(mView);
 
         builder.setView(view);
@@ -51,7 +49,7 @@ public abstract class CustomDialog extends DialogFragment {
         }
     }
 
-    public abstract View getView();
+    public abstract int getViewResourceId();
     public abstract void setUpView();
     public abstract String getTitle();
     public abstract boolean positiveClick(DialogInterface dialogInterface, int i);

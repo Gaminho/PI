@@ -37,12 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.gaminho.pi.dialogs.AddCourseDialog.EXTRA_PUPILS_LIST;
+
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         FirebaseFragment.FirebaseDataListener, ListItemFragment.ListItemListener {
 
     //Intent
-    public final static String EXTRA_PUPILS_LIST = "m-pupils";
     public final static String BROADCAST_UPDATE_LIST = "update-list";
 
     private FirebaseDatabase mDatabase;
@@ -259,7 +260,7 @@ public class IndexActivity extends AppCompatActivity
 //                intent.putExtra(EXTRA_PUPILS_LIST, new ArrayList<>(mPupils.values()));
                 AddCourseDialog a = new AddCourseDialog();
                 Bundle args = new Bundle();
-                args.putSerializable(EXTRA_PUPILS_LIST, new ArrayList<>(mPupils.values()));
+                args.putSerializable(AddCourseDialog.EXTRA_PUPILS_LIST, new ArrayList<>(mPupils.values()));
                 a.setArguments(args);
                 a.show(getFragmentManager(), "MyAddingDialog");
                 //startActivity(intent);

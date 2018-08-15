@@ -1,0 +1,27 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:colorControlHighlight">
+
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimaryDark" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+
+    <item android:id="@android:id/background">
+        <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+            <item android:bottom="3dp" android:left="3dp" android:right="3dp"
+                android:top="3dp">
+                <selector xmlns:android="http://schemas.android.com/apk/res/android">
+                    <item android:state_pressed="true">
+                        <bitmap android:src="@drawable/ic_action_edit" android:tint="@color/colorAccent" />
+                    </item>
+                    <item>
+                        <bitmap android:src="@drawable/ic_action_edit" android:tint="@color/colorPrimary" />
+                    </item>
+                </selector>
+            </item>
+        </layer-list>
+    </item>
+
+</ripple>
