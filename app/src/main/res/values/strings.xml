@@ -32,5 +32,8 @@
     <string name="pupil_hourly_price">Hourly price</string>
     <string name="pupil_invalid_hourly_price">Invalid price</string>
 
+    <!--COURSE-->
+    <string name="course_time">18h00 \- 19h00</string>
+
 
 </resources>

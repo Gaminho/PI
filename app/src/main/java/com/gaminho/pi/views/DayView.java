@@ -4,9 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.gaminho.pi.R;
@@ -23,7 +21,7 @@ public class DayView extends LinearLayout {
 
     private TextView mTVDayLabel, mTVDayNumber, mTVMonth, mTVDayContent;
     private Date mDate;
-    private DetailsCourse mLVCourses;
+    private LinearLayout mLVCourses;
     private DayViewListener mListener;
 
     public DayView(Context context) {
@@ -46,8 +44,12 @@ public class DayView extends LinearLayout {
         mDate = Calendar.getInstance().getTime();
         setDate(mDate);
 
-        findViewById(R.id.day_add_course).setOnClickListener(view -> mListener.addCourse(mDate));
-        findViewById(R.id.day_edit_course).setOnClickListener(view ->
+        findViewById(R.id.day_add_course).setOnClickListener(view -> {
+            if(mListener != null) {
+                mListener.addCourse(mDate);
+            }
+        });
+        findViewById(R.id.day_more_course).setOnClickListener(view ->
                 mLVCourses.setVisibility(mLVCourses.getVisibility() == VISIBLE ? GONE : VISIBLE));
     }
 
@@ -80,25 +82,24 @@ public class DayView extends LinearLayout {
     }
 
     private void updateDayContent(List<Course> pCourses){
-
-        findViewById(R.id.day_edit_course).setVisibility(pCourses.isEmpty() ? GONE : VISIBLE);
+        findViewById(R.id.day_more_course).setVisibility(pCourses.isEmpty() ? GONE : VISIBLE);
         String str = "";
         if(!pCourses.isEmpty()){
-            SimpleDateFormat sdf = new SimpleDateFormat("HH'h'mm", Locale.FRANCE);
 
             str = pCourses.stream().map(course ->
                     String.format(
-                            Locale.FRANCE, "%s - %s : %s %s",
-                            sdf.format(new Date(course.getDate())),
-                            sdf.format(new Date(course.getDate() + course.getDuration() * 60 * 1000)),
+                            Locale.FRANCE, "%s : %s %s", course.getFriendlyDuration(),
                             course.getPupil().getFirstname(), course.getPupil().getLastname()))
                     .collect(Collectors.joining("\n"));
 
-            mLVCourses.setCourses(pCourses);
-//            ArrayAdapter<String> itemsAdapter =
-//                    new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1,
-//                            pCourses.stream().map(course -> course.getPupilId()).collect(Collectors.toList()));
-//            mLVCourses.setAdapter(itemsAdapter);
+            mLVCourses.removeAllViews();
+            for(Course course : pCourses){
+                mLVCourses.addView(new CourseDetail(getContext(), null, course, pCourse -> {
+                    if(mListener != null) {
+                        mListener.removeCourse(pCourse);
+                    } }
+                ), LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            }
         }
 
         mTVDayContent.setText(str);
@@ -111,6 +112,7 @@ public class DayView extends LinearLayout {
     }
 
     public interface DayViewListener {
-        void addCourse(Date mDate);
+        void addCourse(Date pDate);
+        void removeCourse(Course pCourse);
     }
 }

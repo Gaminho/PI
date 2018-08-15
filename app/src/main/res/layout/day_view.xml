@@ -64,40 +64,46 @@
             <TextView
                 android:id="@+id/tv_day_content"
                 android:layout_toEndOf="@+id/separator"
-                android:layout_toStartOf="@+id/day_edit_course"
+                android:layout_toStartOf="@+id/lay_actions"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:textColor="@color/black"
-                android:paddingLeft="@dimen/fab_margin" />
+                android:paddingStart="@dimen/fab_margin" />
 
-            <Button
-                android:id="@+id/day_add_course"
-                android:background="@drawable/selector_add_button"
-                android:layout_width="@dimen/icon_action_size"
-                android:layout_height="@dimen/icon_action_size"
+            <LinearLayout
+                android:id="@+id/lay_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="1dp"
-                android:layout_marginEnd="8dp"/>
-
-            <Button
-                android:id="@+id/day_edit_course"
-                android:background="@drawable/selector_edit_button"
-                android:layout_width="@dimen/icon_action_size"
-                android:layout_height="@dimen/icon_action_size"
-                android:layout_toStartOf="@+id/day_add_course"
-                android:layout_centerVertical="true"
                 android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_marginEnd="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/day_add_course"
+                    android:background="@drawable/selector_add_button"
+                    android:layout_width="@dimen/icon_action_size"
+                    android:layout_height="@dimen/icon_action_size"/>
+
+                <Button
+                    android:id="@+id/day_more_course"
+                    android:background="@drawable/selector_more_button"
+                    android:layout_width="@dimen/icon_action_size"
+                    android:layout_height="@dimen/icon_action_size"/>
+
+            </LinearLayout>
 
         </RelativeLayout>
 
-        <com.gaminho.pi.views.DetailsCourse
+        <LinearLayout
             android:id="@+id/list_courses"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="60dp"
             android:visibility="gone"/>
 
     </LinearLayout>

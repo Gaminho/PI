@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.dialogs.AddCourseDialog;
@@ -218,6 +220,11 @@ public class FragmentWeek extends FirebaseFragment {
             args.putSerializable(AddCourseDialog.EXTRA_DATE, mDate);
             a.setArguments(args);
             a.show(getActivity().getFragmentManager(), "MyAddingDialog");
+        }
+
+        @Override
+        public void removeCourse(Course pCourse) {
+            mListener.removeItem(DatabaseHelper.Nodes.COURSES, pCourse.getId());
         }
     }
 }

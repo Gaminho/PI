@@ -1,7 +1,6 @@
 package com.gaminho.pi.dialogs;
 
 import android.content.DialogInterface;
-import android.util.Log;
 
 import com.gaminho.pi.DatabaseHelper;
 import com.gaminho.pi.beans.Pupil;

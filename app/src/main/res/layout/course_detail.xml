@@ -1,30 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingStart="@dimen/fab_margin">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/pupil_first_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:textStyle="bold"
-        android:text="Coucou"/>
+    <LinearLayout
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:orientation="horizontal"
+        android:background="@color/colorAccent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentTop="true"/>
 
-    <TextView
-        android:id="@+id/course_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="15/08/2018 - 18h00"/>
+    <RelativeLayout
+        android:layout_below="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/pupil_click"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="click"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/pupil_click"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/pupil_first_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/pupil_first_name"/>
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/course_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/course_time"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/pupil_click"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="@dimen/icon_action_size"
+            android:layout_height="@dimen/icon_action_size"
+            android:background="@drawable/selector_delete_button"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

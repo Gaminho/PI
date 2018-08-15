@@ -53,13 +53,17 @@ public class IndexActivity extends AppCompatActivity
     private ChildEventListener mCoursesCEV = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
+            Course course = dataSnapshot.getValue(Course.class);
+            course.setId(dataSnapshot.getKey());
+            mCourses.put(dataSnapshot.getKey(), course);
             sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            mCourses.put(dataSnapshot.getKey(), dataSnapshot.getValue(Course.class));
+            Course course = dataSnapshot.getValue(Course.class);
+            course.setId(dataSnapshot.getKey());
+            mCourses.put(dataSnapshot.getKey(), course);
             sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
@@ -294,6 +298,13 @@ public class IndexActivity extends AppCompatActivity
                 break;
         }
         return items;
+    }
+
+    @Override
+    public void removeItem(DatabaseHelper.Nodes pNode, String pChildKey) {
+        if(mDatabase != null){
+            DatabaseHelper.getNodeReference(mDatabase, pNode).child(pChildKey).removeValue();
+        }
     }
 
     private void retrievePupils(){

@@ -3,10 +3,13 @@ package com.gaminho.pi.beans;
 import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class Course implements Serializable {
 
-    private String mPupilId, mChapter, mComment;
+    private String mId, mPupilId, mChapter, mComment;
     private long mDate, mDuration;
     private float mMoney;
 
@@ -38,6 +41,16 @@ public class Course implements Serializable {
         this.mDate = mDate;
         this.mDuration = mDuration;
         this.mMoney = mMoney;
+    }
+
+    @Exclude
+    public String getId() {
+        return mId;
+    }
+
+    @Exclude
+    public void setId(String mId) {
+        this.mId = mId;
     }
 
     public String getPupilId() {
@@ -97,12 +110,21 @@ public class Course implements Serializable {
     @Override
     public String toString() {
         return "Course{" +
-                "mPupilId='" + mPupilId + '\'' +
+                "mId='" + mId + '\'' +
+                ", mPupilId='" + mPupilId + '\'' +
                 ", mChapter='" + mChapter + '\'' +
                 ", mComment='" + mComment + '\'' +
                 ", mDate=" + mDate +
                 ", mDuration=" + mDuration +
                 ", mMoney=" + mMoney +
                 '}';
+    }
+
+    @Exclude
+    public String getFriendlyDuration(){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH'h'mm", Locale.FRANCE);
+        return String.format(Locale.FRANCE, "%s - %s",
+                sdf.format(new Date(this.getDate())),
+                sdf.format(new Date(this.getDate() + this.getDuration() * 60 * 1000)));
     }
 }

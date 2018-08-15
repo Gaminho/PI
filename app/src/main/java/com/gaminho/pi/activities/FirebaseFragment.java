@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.gaminho.pi.DatabaseHelper;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public abstract class FirebaseFragment extends Fragment {
     public interface FirebaseDataListener {
         FirebaseDatabase getDatabase();
         List getItems(int pListType);
+        void removeItem(DatabaseHelper.Nodes pNode, String pChildKey);
     }
 
 
