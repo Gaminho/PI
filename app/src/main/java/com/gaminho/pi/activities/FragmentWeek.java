@@ -1,6 +1,7 @@
 package com.gaminho.pi.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,9 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.utils.DatabaseHelper;
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.dialogs.AddCourseDialog;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class FragmentWeek extends FirebaseFragment {
+public class FragmentWeek extends Fragment {
 
     private ViewPager mViewPager;
 
@@ -37,10 +37,10 @@ public class FragmentWeek extends FirebaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_week, container, false);;
+        View view = inflater.inflate(R.layout.fragment_week, container, false);
         mViewPager = view.findViewById(R.id.viewpager);
         return view;
     }
@@ -54,24 +54,6 @@ public class FragmentWeek extends FirebaseFragment {
     private void setupViewPager(ViewPager viewPager) {
         MyAdapter m = new MyAdapter(getFragmentManager());
         viewPager.setAdapter(m);
-    }
-
-    @Override
-    protected void refreshView() {
-//        mListItems.clear();
-//        mListItems = ((ArrayList<Course>) mListener.getItems(ListItemFragment.LIST_COURSE)).stream().filter(
-//                course -> new Date(course.getDate()).after(new Date())
-//        ).collect(Collectors.toList());
-//
-//        mTVCounter.setText(String.format(Locale.FRANCE, "%d foreseen courses", mListItems.size()));
-//        double money = 0;
-//
-//        for(Course course : ((ArrayList<Course>)mListItems)){
-//            if (course.getMoney() > 0)
-//                money += course.getMoney();
-//        }
-//
-//        mTVCounter.append(String.format(Locale.FRANCE, "\nExpected money: %.2f €", money));
     }
 
     protected static Date[] getWeekSlot(int pWeekOffset){
@@ -96,7 +78,7 @@ public class FragmentWeek extends FirebaseFragment {
 
         private static final int NUMBER_OF_PAGES = 6;
 
-        public MyAdapter(FragmentManager fm) {
+        MyAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -166,10 +148,10 @@ public class FragmentWeek extends FirebaseFragment {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            View view = inflater.inflate(R.layout.a_week, container, false);
+            View view = inflater.inflate(R.layout.week_page, container, false);
 
             mTVCourses = view.findViewById(R.id.tv_nb_courses);
             mTVMoney = view.findViewById(R.id.tv_nb_money);
@@ -224,7 +206,7 @@ public class FragmentWeek extends FirebaseFragment {
 
         @Override
         public void removeCourse(Course pCourse) {
-            mListener.removeItem(DatabaseHelper.Nodes.COURSES, pCourse.getId());
+            mListener.removeItem(DatabaseHelper.COURSES, pCourse.getId());
         }
     }
 }

@@ -18,13 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.activities.pupils.ActivityPupil;
+import com.gaminho.pi.utils.DatabaseHelper;
 import com.gaminho.pi.FireBaseService;
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Course;
 import com.gaminho.pi.beans.Pupil;
 import com.gaminho.pi.dialogs.AddCourseDialog;
 import com.gaminho.pi.dialogs.AddPupilDialog;
+import com.gaminho.pi.interfaces.DatabaseListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,16 +39,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.gaminho.pi.dialogs.AddCourseDialog.EXTRA_PUPILS_LIST;
-
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        FirebaseFragment.FirebaseDataListener, ListItemFragment.ListItemListener {
+        DatabaseListener, ListItemFragment.ListItemListener {
 
     //Intent
     public final static String BROADCAST_UPDATE_LIST = "update-list";
 
     private FirebaseDatabase mDatabase;
+    private Fragment mCurrentFragment;
     private Map<String, Pupil> mPupils = new HashMap<>();
     private Map<String, Course> mCourses = new HashMap<>();
 
@@ -88,8 +89,6 @@ public class IndexActivity extends AppCompatActivity
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             mPupils.put(dataSnapshot.getKey(), dataSnapshot.getValue(Pupil.class));
-            Log.d(getClass().getSimpleName(), "OnChildAdded: " + dataSnapshot.getValue());
-            Log.d(getClass().getSimpleName(), "OnChildAdded: " + dataSnapshot.getValue(Pupil.class));
             sendBroadcast(new Intent(BROADCAST_UPDATE_LIST));
         }
 
@@ -150,9 +149,9 @@ public class IndexActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.PUPILS)
+        DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.PUPILS)
                 .removeEventListener(mPupilsCEV);
-        DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.COURSES)
+        DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.COURSES)
                 .removeEventListener(mCoursesCEV);
 //        unbindService(mConnection);
 //        mBound = false;
@@ -184,8 +183,7 @@ public class IndexActivity extends AppCompatActivity
 
         mDatabase = FirebaseDatabase.getInstance();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.drawer_content, new FragmentWeek()).commit();
+        loadFragment(FragmentWeek.newInstance());
     }
 
     @Override
@@ -193,6 +191,8 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (!(mCurrentFragment instanceof FragmentWeek)) {
+            loadFragment(FragmentWeek.newInstance());
         } else {
             super.onBackPressed();
         }
@@ -226,22 +226,18 @@ public class IndexActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        Fragment fragment;
+        Fragment fragment = null;
         if (id == R.id.nav_pupils) {
             fragment = ListItemFragment.newInstance(ListItemFragment.LIST_PUPIL);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_courses) {
             fragment = ListItemFragment.newInstance(ListItemFragment.LIST_COURSE);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_share) {
             fragment = FragmentWeek.newInstance();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.drawer_content, fragment).commit();
         } else if (id == R.id.nav_send) {
-
+            fragment = null;
         }
+
+        loadFragment(fragment);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -251,9 +247,19 @@ public class IndexActivity extends AppCompatActivity
 
     @Override
     public void selectItem(Object pItem) {
-        StringBuffer strB = new StringBuffer("Click on ");
-        strB.append(pItem.toString());
-        Toast.makeText( this, strB.toString(),Toast.LENGTH_SHORT).show();
+        if(pItem instanceof Pupil){
+            if(((Pupil) pItem).getID() != null) {
+                Intent intent = new Intent(IndexActivity.this, ActivityPupil.class);
+                intent.putExtra(ActivityPupil.EXTRA_PUPIL, ((Pupil) pItem).getID());
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Pupil id is null", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            StringBuffer strB = new StringBuffer("Click on ");
+            strB.append(pItem.toString());
+            Toast.makeText( this, strB.toString(),Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -289,7 +295,7 @@ public class IndexActivity extends AppCompatActivity
         switch (pListType){
             case ListItemFragment.LIST_COURSE:
                 items.addAll(mCourses.values().stream().filter(course -> course.getPupil() != null).sorted(
-                        (course1, course2) -> Long.valueOf(course2.getDate()).compareTo(course1.getDate()))
+                        (course1, course2) -> Long.compare(course2.getDate(), course1.getDate()))
                         .collect(Collectors.toList()));
                 break;
             case ListItemFragment.LIST_PUPIL:
@@ -301,7 +307,7 @@ public class IndexActivity extends AppCompatActivity
     }
 
     @Override
-    public void removeItem(DatabaseHelper.Nodes pNode, String pChildKey) {
+    public void removeItem(String pNode, String pChildKey) {
         if(mDatabase != null){
             DatabaseHelper.getNodeReference(mDatabase, pNode).child(pChildKey).removeValue();
         }
@@ -309,15 +315,21 @@ public class IndexActivity extends AppCompatActivity
 
     private void retrievePupils(){
         if(mDatabase != null){
-            DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.PUPILS)
-                    .addChildEventListener(mPupilsCEV);
+            DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.PUPILS).addChildEventListener(mPupilsCEV);
         }
     }
 
     private void retrieveCourses(){
         if(mDatabase != null){
-            DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.Nodes.COURSES)
-                    .addChildEventListener(mCoursesCEV);
+            DatabaseHelper.getNodeReference(mDatabase, DatabaseHelper.COURSES).addChildEventListener(mCoursesCEV);
+        }
+    }
+
+    private void loadFragment(Fragment pFragment){
+        if(pFragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.drawer_content, pFragment).commit();
+            mCurrentFragment = pFragment;
         }
     }
 

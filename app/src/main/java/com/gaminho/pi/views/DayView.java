@@ -87,9 +87,8 @@ public class DayView extends LinearLayout {
         if(!pCourses.isEmpty()){
 
             str = pCourses.stream().map(course ->
-                    String.format(
-                            Locale.FRANCE, "%s : %s %s", course.getFriendlyDuration(),
-                            course.getPupil().getFirstname(), course.getPupil().getLastname()))
+                    String.format(Locale.FRANCE, "%s : %s",
+                            course.getFriendlyDuration(), course.getPupil().getFullName()))
                     .collect(Collectors.joining("\n"));
 
             mLVCourses.removeAllViews();

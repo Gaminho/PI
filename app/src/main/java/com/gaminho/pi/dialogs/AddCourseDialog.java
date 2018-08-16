@@ -11,7 +11,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.utils.DatabaseHelper;
 import com.gaminho.pi.R;
 import com.gaminho.pi.adapters.PupilSpinnerAdapter;
 import com.gaminho.pi.beans.Course;
@@ -127,8 +127,8 @@ public class AddCourseDialog extends CustomAddingDialog implements View.OnClickL
     }
 
     @Override
-    DatabaseHelper.Nodes getItemNode() {
-        return DatabaseHelper.Nodes.COURSES;
+    String getItemNode() {
+        return DatabaseHelper.COURSES;
     }
 
     @Override

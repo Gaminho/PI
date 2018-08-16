@@ -1,8 +1,10 @@
 package com.gaminho.pi.beans;
 
 import com.google.android.gms.location.places.Place;
+import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 public class Pupil implements Serializable {
 
@@ -121,5 +123,10 @@ public class Pupil implements Serializable {
                 ", mCreation=" + mCreation +
                 ", pPlace=" + pPlace +
                 '}';
+    }
+
+    @Exclude
+    public String getFullName(){
+        return String.format(Locale.FRANCE, "%s %s", this.mFirstname, this.mLastname);
     }
 }

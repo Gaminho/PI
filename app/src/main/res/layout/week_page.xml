@@ -89,36 +89,6 @@
 
     </ScrollView>
 
-    <!--<LinearLayout-->
-    <!--android:layout_above="@+id/ll_week_info"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:orientation="vertical">-->
-
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_0" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_2" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_3" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_4" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_5" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_6" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-    <!--<com.gaminho.pi.views.DayView-->
-    <!--android:id="@+id/day_view_7" android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content" android:layout_margin="2dp" />-->
-
-    <!--</LinearLayout>-->
-
     <LinearLayout
         android:id="@+id/ll_week_info"
         android:orientation="horizontal"

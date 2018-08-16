@@ -19,6 +19,7 @@
         android:name=".MApplication">
 
         <activity android:name=".activities.courses.ActivityCourse"/>
+        <activity android:name=".activities.pupils.ActivityPupil"/>
 
         <activity
             android:name=".activities.IndexActivity"

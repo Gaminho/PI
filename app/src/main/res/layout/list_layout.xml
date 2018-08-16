@@ -18,13 +18,12 @@
         android:layout_margin="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@drawable/ic_action_add" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_items"
         android:layout_below="@+id/tv_counter"
-        android:layout_above="@+id/fab"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

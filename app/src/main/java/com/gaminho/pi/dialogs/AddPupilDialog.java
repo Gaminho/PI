@@ -1,32 +1,22 @@
 package com.gaminho.pi.dialogs;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.utils.DatabaseHelper;
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Pupil;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 
-import java.text.ParseException;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,8 +101,8 @@ public class AddPupilDialog extends CustomAddingDialog {
     }
 
     @Override
-    DatabaseHelper.Nodes getItemNode() {
-        return DatabaseHelper.Nodes.PUPILS;
+    String getItemNode() {
+        return DatabaseHelper.PUPILS;
     }
 
     //FIXME check the validation and catch expression of float parsing

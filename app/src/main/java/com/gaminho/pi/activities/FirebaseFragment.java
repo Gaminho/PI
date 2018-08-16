@@ -8,16 +8,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.gaminho.pi.DatabaseHelper;
-import com.google.firebase.database.FirebaseDatabase;
+import com.gaminho.pi.interfaces.DatabaseListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class FirebaseFragment extends Fragment {
 
     protected List mListItems;
-    protected FirebaseDataListener mListener;
+    protected DatabaseListener mListener;
 
     private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
@@ -29,13 +29,13 @@ public abstract class FirebaseFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(mNotificationReceiver);
+        Objects.requireNonNull(getActivity()).unregisterReceiver(mNotificationReceiver);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().registerReceiver(mNotificationReceiver, new IntentFilter(IndexActivity.BROADCAST_UPDATE_LIST));
+        Objects.requireNonNull(getActivity()).registerReceiver(mNotificationReceiver, new IntentFilter(IndexActivity.BROADCAST_UPDATE_LIST));
         refreshView();
     }
 
@@ -48,8 +48,8 @@ public abstract class FirebaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof FirebaseDataListener) {
-            mListener = (FirebaseDataListener) context;
+        if (context instanceof DatabaseListener) {
+            mListener = (DatabaseListener) context;
         } else {
             mListener = null;
         }
@@ -66,13 +66,5 @@ public abstract class FirebaseFragment extends Fragment {
     }
 
     protected abstract void refreshView();
-
-
-    public interface FirebaseDataListener {
-        FirebaseDatabase getDatabase();
-        List getItems(int pListType);
-        void removeItem(DatabaseHelper.Nodes pNode, String pChildKey);
-    }
-
 
 }

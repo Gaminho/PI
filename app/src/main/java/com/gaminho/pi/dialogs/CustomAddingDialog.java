@@ -2,7 +2,7 @@ package com.gaminho.pi.dialogs;
 
 import android.content.DialogInterface;
 
-import com.gaminho.pi.DatabaseHelper;
+import com.gaminho.pi.utils.DatabaseHelper;
 import com.gaminho.pi.beans.Pupil;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public abstract class CustomAddingDialog extends CustomDialog {
 
-    public void addItem(DatabaseHelper.Nodes pNode){
+    public void addItem(String pNode){
         if(isItemValid()){
             Object item = extractItemFromUI();
 
@@ -41,7 +41,7 @@ public abstract class CustomAddingDialog extends CustomDialog {
         return true;
     }
 
-    abstract DatabaseHelper.Nodes getItemNode();
+    abstract String getItemNode();
     abstract boolean isItemValid();
     abstract Object extractItemFromUI();
     abstract void addedSuccessfully(Object pItem);

@@ -1,5 +1,6 @@
 package com.gaminho.pi.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.gaminho.pi.R;
 import com.gaminho.pi.beans.Course;
 
+@SuppressLint("ViewConstructor")
 public class CourseDetail extends LinearLayout {
 
     private Course mCourse;
@@ -23,15 +25,6 @@ public class CourseDetail extends LinearLayout {
         this.mCourse = pCourse;
         this.mListener = pListener;
         init();
-    }
-
-    public Course getCourse() {
-        return mCourse;
-    }
-
-    public void setCourse(Course mCourse) {
-        this.mCourse = mCourse;
-        fillCourseView(this.mCourse);
     }
 
     private void init(){

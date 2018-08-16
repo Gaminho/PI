@@ -2,6 +2,7 @@ package com.gaminho.pi.activities;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,10 +51,10 @@ public class ListItemFragment extends FirebaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View mRoot = inflater.inflate(R.layout.list_layout, container, false);;
+        View mRoot = inflater.inflate(R.layout.list_layout, container, false);
         mTVCounter = mRoot.findViewById(R.id.tv_counter);
 
         RecyclerView mListViewItem = mRoot.findViewById(R.id.list_items);
@@ -61,8 +62,8 @@ public class ListItemFragment extends FirebaseFragment {
         mListViewItem.setAdapter(mAdapter);
 
         mRoot.findViewById(R.id.fab_add_item).setOnClickListener(v -> {
-            if(mListListener != null){
-                mListListener.addItem(this.mItemType);
+            if(this.mListener != null){
+                mListener.addItem(this.mItemType);
             }
         });
 
@@ -102,6 +103,5 @@ public class ListItemFragment extends FirebaseFragment {
 
     public interface ListItemListener {
         void selectItem(Object pItem);
-        void addItem(int pListType);
     }
 }
