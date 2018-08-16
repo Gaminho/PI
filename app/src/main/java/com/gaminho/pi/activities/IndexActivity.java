@@ -250,7 +250,8 @@ public class IndexActivity extends AppCompatActivity
         if(pItem instanceof Pupil){
             if(((Pupil) pItem).getID() != null) {
                 Intent intent = new Intent(IndexActivity.this, ActivityPupil.class);
-                intent.putExtra(ActivityPupil.EXTRA_PUPIL, ((Pupil) pItem).getID());
+                intent.putExtra(ActivityPupil.EXTRA_PUPIL_ID, ((Pupil) pItem).getID());
+                intent.putExtra(ActivityPupil.EXTRA_ACTION, ActivityPupil.ACTION_DETAILS);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Pupil id is null", Toast.LENGTH_SHORT).show();
@@ -304,13 +305,6 @@ public class IndexActivity extends AppCompatActivity
                 break;
         }
         return items;
-    }
-
-    @Override
-    public void removeItem(String pNode, String pChildKey) {
-        if(mDatabase != null){
-            DatabaseHelper.getNodeReference(mDatabase, pNode).child(pChildKey).removeValue();
-        }
     }
 
     private void retrievePupils(){

@@ -42,7 +42,7 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
 
         findViewById(R.id.btn_datepicker).setOnClickListener(this);
         findViewById(R.id.btn_hourpicker).setOnClickListener(this);
-        findViewById(R.id.add_class).setOnClickListener(this);
+//        findViewById(R.id.add_class).setOnClickListener(this);
 
     }
 
@@ -91,12 +91,12 @@ public class ActivityCourse extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         switch(view.getId()){
-            case R.id.add_class:
-                Pupil p = ((PupilSpinnerAdapter) mSpinPupil.getAdapter()).getPupils()
-                        .get(mSpinPupil.getSelectedItemPosition());
-                Course course = new Course(p.getID(), mCalendar.getTimeInMillis());
-                addCourse(course);
-                break;
+//            case R.id.add_class:
+//                Pupil p = ((PupilSpinnerAdapter) mSpinPupil.getAdapter()).getPupils()
+//                        .get(mSpinPupil.getSelectedItemPosition());
+//                Course course = new Course(p.getID(), mCalendar.getTimeInMillis());
+//                addCourse(course);
+//                break;
             case R.id.btn_datepicker:
                 new DatePickerDialog(this, (v, year, monthOfYear, dayOfMonth) ->
                         setDate(mCalendar, year, monthOfYear, dayOfMonth),

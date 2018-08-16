@@ -93,7 +93,6 @@ public class FragmentWeek extends Fragment {
         }
     }
 
-
     public static class FragmentAWeek extends FirebaseFragment implements DayView.DayViewListener {
 
         private int mOffset;
